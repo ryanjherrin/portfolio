@@ -172,6 +172,26 @@ const colors = {
   black: '#000000',
 };
 
+// Windows XP Luna color palette
+const colorsXP = {
+  bg: '#3a6ea5',  // XP bliss blue (will be replaced by wallpaper)
+  desktopBg: 'linear-gradient(to bottom, #245EDC 0%, #3A6EA5 100%)',
+  taskbar: 'linear-gradient(to bottom, #3168d5 0%, #4993E6 2%, #2157D7 3%, #2663E0 50%, #1941A5 51%, #1941A5 100%)',
+  taskbarBorder: '#0A246A',
+  startBtnGreen: 'linear-gradient(to bottom, #5ABA47 0%, #3C8D2F 50%, #349E27 51%, #3DB634 100%)',
+  startBtnGreenHover: 'linear-gradient(to bottom, #6FD35E 0%, #4CA63F 50%, #44B737 51%, #4DC944 100%)',
+  startBtnGreenActive: 'linear-gradient(to bottom, #4A9A3A 0%, #2F7A25 50%, #29891E 51%, #32A12A 100%)',
+  windowTitleActive: 'linear-gradient(to bottom, #0A246A 0%, #0F52C5 8%, #0F5DD9 40%, #266ADA 88%, #0A246A 93%, #0A246A 100%)',
+  windowTitleInactive: 'linear-gradient(to bottom, #7C96C8 0%, #8EAAD9 8%, #92B0DD 40%, #A8C4E8 88%, #7C96C8 93%, #7C96C8 100%)',
+  windowBg: '#ECE9D8',
+  windowBorder: '#0054E3',
+  buttonFace: '#ECE9D8',
+  buttonHighlight: '#FFFFFF',
+  buttonShadow: '#ACA899',
+  white: '#ffffff',
+  black: '#000000',
+};
+
 // Classic 3D border styles
 const raised = {
   borderTop: `2px solid ${colors.white}`,
@@ -185,6 +205,21 @@ const inset = {
   borderLeft: `2px solid ${colors.darkerGray}`,
   borderBottom: `2px solid ${colors.white}`,
   borderRight: `2px solid ${colors.white}`,
+};
+
+// XP style borders (softer, more rounded look)
+const raisedXP = {
+  borderTop: `1px solid ${colorsXP.buttonHighlight}`,
+  borderLeft: `1px solid ${colorsXP.buttonHighlight}`,
+  borderBottom: `1px solid ${colorsXP.buttonShadow}`,
+  borderRight: `1px solid ${colorsXP.buttonShadow}`,
+};
+
+const insetXP = {
+  borderTop: `1px solid ${colorsXP.buttonShadow}`,
+  borderLeft: `1px solid ${colorsXP.buttonShadow}`,
+  borderBottom: `1px solid ${colorsXP.buttonHighlight}`,
+  borderRight: `1px solid ${colorsXP.buttonHighlight}`,
 };
 
 // Pixel Art Icons
@@ -306,6 +341,215 @@ const PixelIcon = ({ type, size = 32 }) => {
         <rect x="12" y="7" width="1" height="1" fill="#ffff00"/>
         <rect x="13" y="8" width="1" height="1" fill="#ffff00"/>
         <rect x="12" y="9" width="1" height="1" fill="#ffff00"/>
+      </svg>
+    ),
+  };
+  return icons[type] || icons.folder;
+};
+
+// Windows XP Style Icons - Gradient-based, polished look
+const XPIcon = ({ type, size = 32 }) => {
+  const icons = {
+    computer: (
+      <svg viewBox="0 0 32 32" width={size} height={size}>
+        <defs>
+          <linearGradient id="monitor-body" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#E8E8E8"/>
+            <stop offset="50%" stopColor="#D4D4D4"/>
+            <stop offset="100%" stopColor="#B8B8B8"/>
+          </linearGradient>
+          <linearGradient id="monitor-screen" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#1E5799"/>
+            <stop offset="100%" stopColor="#7DB9E8"/>
+          </linearGradient>
+        </defs>
+        <rect x="4" y="4" width="24" height="18" rx="2" fill="url(#monitor-body)" stroke="#666" strokeWidth="1"/>
+        <rect x="6" y="6" width="20" height="14" rx="1" fill="url(#monitor-screen)"/>
+        <rect x="12" y="22" width="8" height="2" fill="#B8B8B8"/>
+        <rect x="8" y="24" width="16" height="3" rx="1" fill="url(#monitor-body)" stroke="#666" strokeWidth="0.5"/>
+      </svg>
+    ),
+    folder: (
+      <svg viewBox="0 0 32 32" width={size} height={size}>
+        <defs>
+          <linearGradient id="folder-back" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFF1A8"/>
+            <stop offset="100%" stopColor="#E6B800"/>
+          </linearGradient>
+          <linearGradient id="folder-front" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFEB3B"/>
+            <stop offset="50%" stopColor="#FDD835"/>
+            <stop offset="100%" stopColor="#F9A825"/>
+          </linearGradient>
+        </defs>
+        <path d="M2 8 L2 26 Q2 28 4 28 L28 28 Q30 28 30 26 L30 12 Q30 10 28 10 L14 10 L12 6 L4 6 Q2 6 2 8" fill="url(#folder-back)"/>
+        <path d="M2 12 L2 26 Q2 28 4 28 L28 28 Q30 28 30 26 L30 12 Q30 10 28 10 L4 10 Q2 10 2 12" fill="url(#folder-front)"/>
+      </svg>
+    ),
+    notepad: (
+      <svg viewBox="0 0 32 32" width={size} height={size}>
+        <defs>
+          <linearGradient id="notepad-paper" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF"/>
+            <stop offset="100%" stopColor="#F5F5F5"/>
+          </linearGradient>
+          <linearGradient id="notepad-binding" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#1565C0"/>
+            <stop offset="50%" stopColor="#1E88E5"/>
+            <stop offset="100%" stopColor="#1565C0"/>
+          </linearGradient>
+        </defs>
+        <rect x="6" y="2" width="20" height="28" rx="1" fill="url(#notepad-paper)" stroke="#CCC" strokeWidth="1"/>
+        <rect x="6" y="2" width="20" height="4" fill="url(#notepad-binding)"/>
+        <line x1="10" y1="10" x2="22" y2="10" stroke="#DDD" strokeWidth="1"/>
+        <line x1="10" y1="14" x2="22" y2="14" stroke="#DDD" strokeWidth="1"/>
+        <line x1="10" y1="18" x2="22" y2="18" stroke="#DDD" strokeWidth="1"/>
+        <line x1="10" y1="22" x2="18" y2="22" stroke="#DDD" strokeWidth="1"/>
+      </svg>
+    ),
+    mail: (
+      <svg viewBox="0 0 32 32" width={size} height={size}>
+        <defs>
+          <linearGradient id="envelope-body" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFF8E1"/>
+            <stop offset="100%" stopColor="#FFE082"/>
+          </linearGradient>
+          <linearGradient id="envelope-flap" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFECB3"/>
+            <stop offset="100%" stopColor="#FFD54F"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="8" width="28" height="18" rx="2" fill="url(#envelope-body)" stroke="#D4A000" strokeWidth="1"/>
+        <path d="M2 10 L16 18 L30 10" stroke="#D4A000" strokeWidth="1.5" fill="none"/>
+        <path d="M2 8 L16 16 L30 8" fill="url(#envelope-flap)" stroke="#D4A000" strokeWidth="1"/>
+      </svg>
+    ),
+    terminal: (
+      <svg viewBox="0 0 32 32" width={size} height={size}>
+        <defs>
+          <linearGradient id="terminal-frame" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#505050"/>
+            <stop offset="100%" stopColor="#303030"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="4" width="28" height="24" rx="2" fill="url(#terminal-frame)"/>
+        <rect x="4" y="6" width="24" height="20" fill="#000000"/>
+        <text x="6" y="14" fill="#C0C0C0" fontSize="6" fontFamily="monospace">C:\&gt;</text>
+        <text x="6" y="22" fill="#00FF00" fontSize="6" fontFamily="monospace">_</text>
+      </svg>
+    ),
+    user: (
+      <svg viewBox="0 0 32 32" width={size} height={size}>
+        <defs>
+          <linearGradient id="user-head" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFE0BD"/>
+            <stop offset="100%" stopColor="#FFCBA4"/>
+          </linearGradient>
+          <linearGradient id="user-body" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#42A5F5"/>
+            <stop offset="100%" stopColor="#1565C0"/>
+          </linearGradient>
+        </defs>
+        <ellipse cx="16" cy="10" rx="7" ry="8" fill="url(#user-head)" stroke="#D4A574" strokeWidth="1"/>
+        <path d="M6 30 Q6 20 16 18 Q26 20 26 30" fill="url(#user-body)"/>
+        <circle cx="13" cy="9" r="1" fill="#333"/>
+        <circle cx="19" cy="9" r="1" fill="#333"/>
+        <path d="M13 13 Q16 15 19 13" stroke="#C08060" strokeWidth="1" fill="none"/>
+      </svg>
+    ),
+    recycle: (
+      <svg viewBox="0 0 32 32" width={size} height={size}>
+        <defs>
+          <linearGradient id="recycle-bin" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#E0E0E0"/>
+            <stop offset="100%" stopColor="#9E9E9E"/>
+          </linearGradient>
+        </defs>
+        <path d="M8 8 L6 28 Q6 30 8 30 L24 30 Q26 30 26 28 L24 8" fill="url(#recycle-bin)" stroke="#666" strokeWidth="1"/>
+        <rect x="5" y="5" width="22" height="4" rx="1" fill="url(#recycle-bin)" stroke="#666" strokeWidth="1"/>
+        <rect x="12" y="3" width="8" height="3" rx="1" fill="#BDBDBD" stroke="#666" strokeWidth="0.5"/>
+        <line x1="11" y1="12" x2="10" y2="26" stroke="#757575" strokeWidth="1.5"/>
+        <line x1="16" y1="12" x2="16" y2="26" stroke="#757575" strokeWidth="1.5"/>
+        <line x1="21" y1="12" x2="22" y2="26" stroke="#757575" strokeWidth="1.5"/>
+      </svg>
+    ),
+    minesweeper: (
+      <svg viewBox="0 0 32 32" width={size} height={size}>
+        <defs>
+          <linearGradient id="mine-body" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#424242"/>
+            <stop offset="50%" stopColor="#212121"/>
+            <stop offset="100%" stopColor="#000000"/>
+          </linearGradient>
+          <radialGradient id="mine-highlight" cx="30%" cy="30%">
+            <stop offset="0%" stopColor="#666"/>
+            <stop offset="100%" stopColor="#000"/>
+          </radialGradient>
+        </defs>
+        <rect x="2" y="2" width="28" height="28" rx="2" fill="#BDBDBD" stroke="#888" strokeWidth="1"/>
+        <circle cx="16" cy="16" r="8" fill="url(#mine-highlight)"/>
+        <line x1="16" y1="4" x2="16" y2="10" stroke="#000" strokeWidth="2"/>
+        <line x1="16" y1="22" x2="16" y2="28" stroke="#000" strokeWidth="2"/>
+        <line x1="4" y1="16" x2="10" y2="16" stroke="#000" strokeWidth="2"/>
+        <line x1="22" y1="16" x2="28" y2="16" stroke="#000" strokeWidth="2"/>
+        <line x1="8" y1="8" x2="12" y2="12" stroke="#000" strokeWidth="2"/>
+        <line x1="20" y1="20" x2="24" y2="24" stroke="#000" strokeWidth="2"/>
+        <line x1="24" y1="8" x2="20" y2="12" stroke="#000" strokeWidth="2"/>
+        <line x1="12" y1="20" x2="8" y2="24" stroke="#000" strokeWidth="2"/>
+        <circle cx="13" cy="13" r="2" fill="#FFF" opacity="0.6"/>
+      </svg>
+    ),
+    help: (
+      <svg viewBox="0 0 32 32" width={size} height={size}>
+        <defs>
+          <linearGradient id="help-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFEE58"/>
+            <stop offset="100%" stopColor="#FDD835"/>
+          </linearGradient>
+        </defs>
+        <rect x="4" y="2" width="24" height="28" rx="2" fill="url(#help-bg)" stroke="#F9A825" strokeWidth="1"/>
+        <text x="16" y="22" textAnchor="middle" fill="#1565C0" fontSize="18" fontWeight="bold" fontFamily="serif">?</text>
+      </svg>
+    ),
+    paint: (
+      <svg viewBox="0 0 32 32" width={size} height={size}>
+        <defs>
+          <linearGradient id="paint-palette" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFECB3"/>
+            <stop offset="100%" stopColor="#D7CCC8"/>
+          </linearGradient>
+        </defs>
+        <ellipse cx="16" cy="18" rx="13" ry="11" fill="url(#paint-palette)" stroke="#8D6E63" strokeWidth="1"/>
+        <ellipse cx="10" cy="12" rx="2.5" ry="2" fill="#F44336"/>
+        <ellipse cx="18" cy="10" rx="2.5" ry="2" fill="#2196F3"/>
+        <ellipse cx="24" cy="14" rx="2.5" ry="2" fill="#4CAF50"/>
+        <ellipse cx="22" cy="22" rx="2.5" ry="2" fill="#FFEB3B"/>
+        <ellipse cx="12" cy="22" rx="2.5" ry="2" fill="#9C27B0"/>
+        <ellipse cx="8" cy="17" rx="3" ry="2.5" fill="#FAFAFA" stroke="#CCC" strokeWidth="0.5"/>
+      </svg>
+    ),
+    media: (
+      <svg viewBox="0 0 32 32" width={size} height={size}>
+        <defs>
+          <linearGradient id="media-body" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#303F9F"/>
+            <stop offset="100%" stopColor="#1A237E"/>
+          </linearGradient>
+          <linearGradient id="media-screen" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#1B1B1B"/>
+            <stop offset="100%" stopColor="#000000"/>
+          </linearGradient>
+          <linearGradient id="play-btn" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#4CAF50"/>
+            <stop offset="100%" stopColor="#2E7D32"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="4" width="28" height="24" rx="2" fill="url(#media-body)"/>
+        <rect x="4" y="6" width="24" height="16" rx="1" fill="url(#media-screen)"/>
+        <polygon points="14,10 14,18 20,14" fill="url(#play-btn)"/>
+        <rect x="4" y="24" width="24" height="2" rx="1" fill="#5C6BC0"/>
+        <circle cx="8" cy="25" r="1" fill="#FFF"/>
+        <rect x="12" y="24.5" width="12" height="1" fill="#7986CB" rx="0.5"/>
       </svg>
     ),
   };
@@ -549,13 +793,20 @@ const Clippy = ({ onClose }) => {
 };
 
 // Minesweeper
-const Minesweeper = () => {
+const Minesweeper = ({ currentOS = 'win95' }) => {
   const [grid, setGrid] = useState([]);
   const [gameState, setGameState] = useState('playing');
   const [flagCount, setFlagCount] = useState(0);
   const ROWS = 8;
   const COLS = 8;
   const MINES = 10;
+
+  // OS-specific styling
+  const isXP = currentOS === 'winxp';
+  const bgColor = isXP ? colorsXP.windowBg : colors.gray;
+  const borderStyle = isXP ? insetXP : inset;
+  const buttonBorder = isXP ? raisedXP : raised;
+  const fontFamily = isXP ? 'Tahoma, sans-serif' : '"MS Sans Serif", Tahoma, sans-serif';
 
   const initGame = useCallback(() => {
     let newGrid = Array(ROWS).fill(null).map(() => 
@@ -662,21 +913,54 @@ const Minesweeper = () => {
 
   const faceEmoji = gameState === 'won' ? '😎' : gameState === 'lost' ? '😵' : '🙂';
 
+  // XP-specific cell styling
+  const getCellStyle = (cell) => {
+    if (cell.isRevealed) {
+      return isXP 
+        ? { backgroundColor: '#D4D0C8', border: '1px solid #808080' }
+        : { backgroundColor: '#c0c0c0', border: '1px solid #808080' };
+    }
+    return isXP 
+      ? { backgroundColor: bgColor, ...raisedXP, borderRadius: '2px' }
+      : { backgroundColor: colors.gray, ...raised };
+  };
+
   return (
-    <div className="p-2 select-none" style={{ fontFamily: '"MS Sans Serif", Tahoma, sans-serif', fontSize: '12px' }}>
-      <div className="flex items-center justify-between p-1 mb-2" style={{ ...inset, backgroundColor: colors.gray }}>
-        <div className="w-10 h-6 flex items-center justify-center text-red-600 font-bold" style={{ backgroundColor: '#000', fontFamily: 'monospace' }}>
+    <div className="p-2 select-none" style={{ fontFamily, fontSize: '12px' }}>
+      <div 
+        className={`flex items-center justify-between p-1 mb-2 ${isXP ? 'rounded' : ''}`} 
+        style={{ ...borderStyle, backgroundColor: bgColor }}
+      >
+        <div 
+          className="w-10 h-6 flex items-center justify-center text-red-600 font-bold" 
+          style={{ 
+            backgroundColor: '#000', 
+            fontFamily: 'monospace',
+            borderRadius: isXP ? '2px' : '0',
+          }}
+        >
           {String(MINES - flagCount).padStart(3, '0')}
         </div>
-        <button onClick={initGame} className="w-7 h-7 flex items-center justify-center text-lg" style={{ backgroundColor: colors.gray, ...raised }}>
+        <button 
+          onClick={initGame} 
+          className={`w-7 h-7 flex items-center justify-center text-lg ${isXP ? 'rounded' : ''}`} 
+          style={{ backgroundColor: bgColor, ...buttonBorder }}
+        >
           {faceEmoji}
         </button>
-        <div className="w-10 h-6 flex items-center justify-center text-red-600 font-bold" style={{ backgroundColor: '#000', fontFamily: 'monospace' }}>
+        <div 
+          className="w-10 h-6 flex items-center justify-center text-red-600 font-bold" 
+          style={{ 
+            backgroundColor: '#000', 
+            fontFamily: 'monospace',
+            borderRadius: isXP ? '2px' : '0',
+          }}
+        >
           000
         </div>
       </div>
       
-      <div className="inline-block" style={{ ...inset }}>
+      <div className={`inline-block ${isXP ? 'rounded' : ''}`} style={{ ...borderStyle }}>
         {grid.map((row, r) => (
           <div key={r} className="flex">
             {row.map((cell, c) => (
@@ -686,7 +970,7 @@ const Minesweeper = () => {
                 onContextMenu={(e) => toggleFlag(e, r, c)}
                 className="w-5 h-5 flex items-center justify-center text-xs font-bold"
                 style={{
-                  ...(cell.isRevealed ? { backgroundColor: '#c0c0c0', border: '1px solid #808080' } : { backgroundColor: colors.gray, ...raised }),
+                  ...getCellStyle(cell),
                   color: getNumberColor(cell.neighborMines),
                   fontSize: '11px',
                 }}
@@ -1029,6 +1313,246 @@ const Window95 = ({ id, title, icon, children, position, size, zIndex, isMinimiz
   );
 };
 
+// Windows XP Window
+const WindowXP = ({ id, title, icon, children, position, size, zIndex, isMinimized, isMaximized, onClose, onMinimize, onMaximize, onFocus, onDrag, onResize, hideMenuBar, minWidth = 200, minHeight = 150, allWindows, isMobile, isTouch }) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeDirection, setResizeDirection] = useState(null);
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const resizeStart = useRef({ x: 0, y: 0, width: 0, height: 0, posX: 0, posY: 0 });
+  const animationFrameRef = useRef(null);
+
+  const effectivelyMaximized = isMobile || isMaximized;
+
+  const handleDragMouseDown = (e) => {
+    if (isMobile) return;
+    if (e.target.closest('.window-controls')) return;
+    if (isMaximized) return;
+    onFocus(id);
+    setIsDragging(true);
+    dragOffset.current = {
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    };
+  };
+
+  const handleDragMouseMove = useCallback((e) => {
+    if (!isDragging || isMobile) return;
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    animationFrameRef.current = requestAnimationFrame(() => {
+      const nextX = e.clientX - dragOffset.current.x;
+      const nextY = e.clientY - dragOffset.current.y;
+      const viewport = { width: window.innerWidth, height: window.innerHeight };
+      const snapped = getSnappedPosition(nextX, nextY, size, allWindows, id, viewport);
+      onDrag(id, snapped);
+    });
+  }, [isDragging, id, onDrag, size, allWindows, isMobile]);
+
+  const handleDragMouseUp = () => {
+    setIsDragging(false);
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+  };
+
+  const handleResizeMouseDown = (e, direction) => {
+    if (isMobile) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (isMaximized) return;
+    onFocus(id);
+    setIsResizing(true);
+    setResizeDirection(direction);
+    resizeStart.current = {
+      x: e.clientX, y: e.clientY,
+      width: size.width, height: size.height,
+      posX: position.x, posY: position.y
+    };
+  };
+
+  const handleResizeMouseMove = useCallback((e) => {
+    if (!isResizing || !resizeDirection || isMobile) return;
+    const deltaX = e.clientX - resizeStart.current.x;
+    const deltaY = e.clientY - resizeStart.current.y;
+    let newWidth = resizeStart.current.width;
+    let newHeight = resizeStart.current.height;
+    let newX = resizeStart.current.posX;
+    let newY = resizeStart.current.posY;
+    if (resizeDirection.includes('e')) newWidth = Math.max(minWidth, resizeStart.current.width + deltaX);
+    if (resizeDirection.includes('w')) {
+      const proposedWidth = resizeStart.current.width - deltaX;
+      if (proposedWidth >= minWidth) { newWidth = proposedWidth; newX = resizeStart.current.posX + deltaX; }
+    }
+    if (resizeDirection.includes('s')) newHeight = Math.max(minHeight, resizeStart.current.height + deltaY);
+    if (resizeDirection.includes('n')) {
+      const proposedHeight = resizeStart.current.height - deltaY;
+      if (proposedHeight >= minHeight) { newHeight = proposedHeight; newY = resizeStart.current.posY + deltaY; }
+    }
+    onResize(id, { width: newWidth, height: newHeight });
+    if (newX !== position.x || newY !== position.y) onDrag(id, { x: newX, y: newY });
+  }, [isResizing, resizeDirection, id, onResize, onDrag, minWidth, minHeight, position.x, position.y]);
+
+  const handleResizeMouseUp = () => { setIsResizing(false); setResizeDirection(null); };
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleDragMouseMove);
+      window.addEventListener('mouseup', handleDragMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleDragMouseMove);
+        window.removeEventListener('mouseup', handleDragMouseUp);
+        if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      };
+    }
+  }, [isDragging, handleDragMouseMove]);
+
+  useEffect(() => {
+    if (isResizing) {
+      window.addEventListener('mousemove', handleResizeMouseMove);
+      window.addEventListener('mouseup', handleResizeMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleResizeMouseMove);
+        window.removeEventListener('mouseup', handleResizeMouseUp);
+      };
+    }
+  }, [isResizing, handleResizeMouseMove]);
+
+  if (isMinimized) return null;
+
+  const taskbarHeight = isMobile ? 56 : 30;
+  const windowStyle = effectivelyMaximized 
+    ? { top: 0, left: 0, width: '100%', height: `calc(100% - ${taskbarHeight}px)`, zIndex }
+    : { top: position.y, left: position.x, width: size.width, height: size.height, zIndex };
+
+  const resizeHandleBase = "absolute bg-transparent";
+  const resizeHandles = [
+    { dir: 'n', className: `${resizeHandleBase} top-0 left-2 right-2 h-1 cursor-n-resize` },
+    { dir: 's', className: `${resizeHandleBase} bottom-0 left-2 right-2 h-1 cursor-s-resize` },
+    { dir: 'e', className: `${resizeHandleBase} right-0 top-2 bottom-2 w-1 cursor-e-resize` },
+    { dir: 'w', className: `${resizeHandleBase} left-0 top-2 bottom-2 w-1 cursor-w-resize` },
+    { dir: 'nw', className: `${resizeHandleBase} top-0 left-0 w-2 h-2 cursor-nw-resize` },
+    { dir: 'ne', className: `${resizeHandleBase} top-0 right-0 w-2 h-2 cursor-ne-resize` },
+    { dir: 'sw', className: `${resizeHandleBase} bottom-0 left-0 w-2 h-2 cursor-sw-resize` },
+    { dir: 'se', className: `${resizeHandleBase} bottom-0 right-0 w-2 h-2 cursor-se-resize` },
+  ];
+
+  const titleBarHeight = isMobile ? 'h-10' : 'h-7';
+  const buttonSize = isMobile ? 22 : 21;
+
+  return (
+    <div
+      className="absolute flex flex-col rounded-t-lg overflow-hidden"
+      style={{
+        ...windowStyle,
+        backgroundColor: colorsXP.windowBg,
+        border: '1px solid #0054E3',
+        boxShadow: '2px 2px 8px rgba(0,0,0,0.3)',
+      }}
+      onMouseDown={() => onFocus(id)}
+    >
+      {!effectivelyMaximized && !isMobile && resizeHandles.map(({ dir, className }) => (
+        <div key={dir} className={className} onMouseDown={(e) => handleResizeMouseDown(e, dir)} />
+      ))}
+
+      {/* XP Title bar */}
+      <div 
+        className={`${titleBarHeight} flex items-center px-2 gap-2 select-none shrink-0 rounded-t-lg`}
+        style={{ 
+          background: colorsXP.windowTitleActive,
+          touchAction: 'none'
+        }}
+        onMouseDown={handleDragMouseDown}
+      >
+        <div className={`${isMobile ? 'w-5 h-5' : 'w-4 h-4'} flex items-center justify-center shrink-0`}>{icon}</div>
+        <span className={`text-white ${isMobile ? 'text-sm' : 'text-xs'} font-bold flex-1 truncate`} style={{ fontFamily: 'Trebuchet MS, Tahoma, sans-serif', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
+          {title}
+        </span>
+        
+        <div className="window-controls flex gap-0.5">
+          {/* XP window buttons */}
+          {!isMobile && (
+            <button 
+              onClick={() => onMinimize(id)} 
+              className="flex items-center justify-center rounded-sm transition-all"
+              style={{ 
+                width: buttonSize, height: buttonSize,
+                background: 'linear-gradient(to bottom, #3C81F3 0%, #2B71E1 45%, #1C5FC8 46%, #1856B0 100%)',
+                border: '1px solid #2456B0',
+              }}
+            >
+              <svg width="9" height="9" viewBox="0 0 9 9">
+                <rect x="1" y="6" width="7" height="2" fill="white"/>
+              </svg>
+            </button>
+          )}
+          {!isMobile && (
+            <button 
+              onClick={() => onMaximize(id)} 
+              className="flex items-center justify-center rounded-sm transition-all"
+              style={{ 
+                width: buttonSize, height: buttonSize,
+                background: 'linear-gradient(to bottom, #3C81F3 0%, #2B71E1 45%, #1C5FC8 46%, #1856B0 100%)',
+                border: '1px solid #2456B0',
+              }}
+            >
+              <svg width="9" height="9" viewBox="0 0 9 9">
+                <rect x="1" y="1" width="7" height="7" fill="none" stroke="white" strokeWidth="1"/>
+                <rect x="1" y="1" width="7" height="2" fill="white"/>
+              </svg>
+            </button>
+          )}
+          <button 
+            onClick={() => onClose(id)} 
+            className="flex items-center justify-center rounded-sm transition-all"
+            style={{ 
+              width: buttonSize, height: buttonSize,
+              background: 'linear-gradient(to bottom, #C33A32 0%, #B12A23 45%, #A01F19 46%, #8B1712 100%)',
+              border: '1px solid #6B1510',
+            }}
+          >
+            <svg width="9" height="9" viewBox="0 0 9 9">
+              <path d="M1 1 L8 8 M8 1 L1 8" stroke="white" strokeWidth="1.5"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      {/* Menu bar */}
+      {!hideMenuBar && (
+        <div className="h-6 flex items-center px-1 text-xs border-b" style={{ fontFamily: 'Tahoma, sans-serif', color: colorsXP.black, backgroundColor: colorsXP.windowBg, borderColor: '#ACA899' }}>
+          <span className="px-2 hover:bg-[#316AC5] hover:text-white cursor-pointer rounded"><u>F</u>ile</span>
+          <span className="px-2 hover:bg-[#316AC5] hover:text-white cursor-pointer rounded"><u>E</u>dit</span>
+          <span className="px-2 hover:bg-[#316AC5] hover:text-white cursor-pointer rounded"><u>V</u>iew</span>
+          <span className="px-2 hover:bg-[#316AC5] hover:text-white cursor-pointer rounded"><u>H</u>elp</span>
+        </div>
+      )}
+      
+      {/* Content */}
+      <div className="flex-1 overflow-auto" style={{ backgroundColor: colorsXP.white, color: colorsXP.black, border: '1px solid #ACA899', margin: '2px' }}>
+        {children}
+      </div>
+      
+      {/* Status bar */}
+      <div className={`${isMobile ? 'h-7' : 'h-5'} flex items-center px-1 ${isMobile ? 'text-sm' : 'text-xs'} shrink-0`} style={{ fontFamily: 'Tahoma, sans-serif', color: colorsXP.black, backgroundColor: colorsXP.windowBg }}>
+        <div className="flex-1 px-2 h-4 flex items-center rounded" style={{ ...insetXP, backgroundColor: '#F1EFE2' }}>Ready</div>
+        {!effectivelyMaximized && !isMobile && (
+          <div 
+            className="w-4 h-4 cursor-se-resize flex items-end justify-end ml-1"
+            onMouseDown={(e) => handleResizeMouseDown(e, 'se')}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12">
+              <circle cx="10" cy="2" r="1.5" fill="#ACA899"/>
+              <circle cx="6" cy="6" r="1.5" fill="#ACA899"/>
+              <circle cx="10" cy="6" r="1.5" fill="#ACA899"/>
+              <circle cx="2" cy="10" r="1.5" fill="#ACA899"/>
+              <circle cx="6" cy="10" r="1.5" fill="#ACA899"/>
+              <circle cx="10" cy="10" r="1.5" fill="#ACA899"/>
+            </svg>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // Desktop icon
 const DesktopIcon95 = ({ icon, label, onClick, isSelected, onSelect, isMobile }) => {
   const iconContainerSize = isMobile ? 'w-12 h-12' : 'w-8 h-8';
@@ -1059,12 +1583,72 @@ const DesktopIcon95 = ({ icon, label, onClick, isSelected, onSelect, isMobile })
   );
 };
 
+// Windows XP Desktop icon
+const DesktopIconXP = ({ icon, label, onClick, isSelected, onSelect, isMobile }) => {
+  const iconContainerSize = isMobile ? 'w-14 h-14' : 'w-12 h-12';
+  const containerWidth = isMobile ? 'w-20' : 'w-[75px]';
+  const fontSize = isMobile ? 'text-xs' : 'text-[11px]';
+  
+  return (
+    <button 
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect();
+        if (isMobile || e.detail === 2) onClick();
+      }}
+      className={`flex flex-col items-center gap-1 p-2 ${containerWidth} rounded transition-all`}
+      style={{ 
+        fontFamily: 'Tahoma, sans-serif',
+        background: isSelected 
+          ? 'linear-gradient(to bottom, rgba(49,106,197,0.4) 0%, rgba(49,106,197,0.25) 100%)' 
+          : 'transparent',
+        border: isSelected ? '1px dotted rgba(49,106,197,0.8)' : '1px solid transparent',
+      }}
+    >
+      <div 
+        className={`${iconContainerSize} flex items-center justify-center rounded`}
+        style={{
+          filter: isSelected ? 'drop-shadow(0 0 3px rgba(49,106,197,0.8))' : 'drop-shadow(1px 2px 2px rgba(0,0,0,0.3))',
+        }}
+      >
+        {icon}
+      </div>
+      <span 
+        className={`${fontSize} text-center leading-tight px-1 py-0.5 rounded`}
+        style={{ 
+          color: 'white',
+          textShadow: '1px 1px 2px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.8)',
+          backgroundColor: isSelected ? 'rgba(49,106,197,0.7)' : 'transparent',
+        }}
+      >
+        {label}
+      </span>
+    </button>
+  );
+};
+
 // Start Menu
-const StartMenu95 = ({ apps, onAppClick, onClose, isMobile }) => {
+const StartMenu95 = ({ apps, onAppClick, onClose, isMobile, currentOS, onOSChange }) => {
+  const [hoveredSubmenu, setHoveredSubmenu] = useState<string | null>(null);
   const menuBottom = isMobile ? 'bottom-14' : 'bottom-[30px]';
   const itemPadding = isMobile ? 'px-4 py-3' : 'px-3 py-1.5';
   const fontSize = isMobile ? 'text-sm' : 'text-xs';
   const menuWidth = isMobile ? 'flex-1' : 'w-48';
+
+  const osOptions = [
+    { id: 'win95', label: 'Windows 95' },
+    { id: 'winxp', label: 'Windows XP' },
+  ];
+
+  // Computer/monitor icon for Switch OS
+  const ComputerIcon = ({ size }) => (
+    <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
+      <rect x="1" y="1" width="14" height="10" fill="#000080"/>
+      <rect x="2" y="2" width="12" height="8" fill="#008080"/>
+      <rect x="5" y="12" width="6" height="1" fill="#808080"/>
+      <rect x="4" y="13" width="8" height="1" fill="#808080"/>
+    </svg>
+  );
   
   return (
     <>
@@ -1120,6 +1704,48 @@ const StartMenu95 = ({ apps, onAppClick, onClose, isMobile }) => {
           ))}
           
           <div className="border-t border-[#808080] border-b border-b-white my-1 mx-2" />
+
+          {/* Switch OS menu item with submenu */}
+          <div 
+            className="relative"
+            onMouseEnter={() => setHoveredSubmenu('switchOS')}
+            onMouseLeave={() => setHoveredSubmenu(null)}
+          >
+            <button 
+              className={`w-full flex items-center gap-3 ${itemPadding} text-left ${hoveredSubmenu === 'switchOS' ? 'bg-[#000080] text-white' : ''}`}
+              style={{ fontFamily: '"MS Sans Serif", Tahoma, sans-serif' }}
+            >
+              <span className={`${isMobile ? 'w-6' : 'w-5'} flex justify-center`}>
+                <ComputerIcon size={isMobile ? 24 : 20} />
+              </span>
+              <span className={`${fontSize} flex-1`}>Switch OS</span>
+              <span className={fontSize}>▶</span>
+            </button>
+            
+            {/* OS Selection Submenu */}
+            {hoveredSubmenu === 'switchOS' && (
+              <div 
+                className="absolute left-full top-0 ml-0"
+                style={{ backgroundColor: colors.gray, color: colors.black, ...raised }}
+              >
+                <div className="py-1 w-36">
+                  {osOptions.map((os) => (
+                    <button
+                      key={os.id}
+                      onClick={() => { onOSChange(os.id); onClose(); }}
+                      className={`w-full flex items-center gap-2 ${itemPadding} hover:bg-[#000080] hover:text-white active:bg-[#000080] active:text-white text-left`}
+                      style={{ fontFamily: '"MS Sans Serif", Tahoma, sans-serif' }}
+                    >
+                      <span className={`${fontSize} w-4`}>{currentOS === os.id ? '✓' : ''}</span>
+                      <span className={fontSize}>{os.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div className="border-t border-[#808080] border-b border-b-white my-1 mx-2" />
           
           <button 
             className={`w-full flex items-center gap-3 ${itemPadding} hover:bg-[#000080] hover:text-white active:bg-[#000080] active:text-white text-left`} 
@@ -1127,6 +1753,198 @@ const StartMenu95 = ({ apps, onAppClick, onClose, isMobile }) => {
           >
             <span className={`${isMobile ? 'w-6' : 'w-5'} flex justify-center`}>🔌</span>
             <span className={fontSize}>Shut Down...</span>
+          </button>
+        </div>
+      </div>
+    </>
+  );
+};
+
+// Windows XP Start Menu
+const StartMenuXP = ({ apps, onAppClick, onClose, isMobile, currentOS, onOSChange }) => {
+  const [hoveredSubmenu, setHoveredSubmenu] = useState<string | null>(null);
+  const menuBottom = isMobile ? 'bottom-14' : 'bottom-[30px]';
+  const fontSize = isMobile ? 'text-sm' : 'text-xs';
+
+  const osOptions = [
+    { id: 'win95', label: 'Windows 95' },
+    { id: 'winxp', label: 'Windows XP' },
+  ];
+
+  const ComputerIcon = ({ size }) => (
+    <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
+      <rect x="1" y="1" width="14" height="10" fill="#0054E3"/>
+      <rect x="2" y="2" width="12" height="8" fill="#3A6EA5"/>
+      <rect x="5" y="12" width="6" height="1" fill="#ACA899"/>
+      <rect x="4" y="13" width="8" height="1" fill="#ACA899"/>
+    </svg>
+  );
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40" onClick={onClose} />
+      <div 
+        className={`absolute ${menuBottom} left-0 z-50 ${isMobile ? 'right-0 mx-2' : ''} rounded-t-lg overflow-hidden`}
+        style={{ 
+          backgroundColor: colorsXP.windowBg,
+          boxShadow: '2px 2px 10px rgba(0,0,0,0.4)',
+          border: '1px solid #0054E3',
+        }}
+      >
+        {/* XP User Header */}
+        <div 
+          className="flex items-center gap-3 px-3 py-2"
+          style={{ background: colorsXP.windowTitleActive }}
+        >
+          <div 
+            className="w-12 h-12 rounded-md flex items-center justify-center"
+            style={{ 
+              background: 'linear-gradient(to bottom, #E8A94E 0%, #D4883A 100%)',
+              border: '2px solid white',
+            }}
+          >
+            <span className="text-2xl">👤</span>
+          </div>
+          <span className="text-white font-bold text-lg" style={{ fontFamily: 'Trebuchet MS, Tahoma, sans-serif', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
+            Ryan
+          </span>
+        </div>
+        
+        <div className="flex">
+          {/* Left column - white with programs */}
+          <div className={`${isMobile ? 'flex-1' : 'w-52'} bg-white py-1 text-black`}>
+            {/* Pinned apps */}
+            {apps.slice(0, 6).map((app) => (
+              <button
+                key={app.id}
+                onClick={() => { onAppClick(app.id); onClose(); }}
+                className={`w-full flex items-center gap-3 px-3 py-1.5 hover:bg-[#316AC5] hover:text-white text-left text-black`}
+                style={{ fontFamily: 'Tahoma, sans-serif' }}
+              >
+                <span className="w-8 h-8 flex items-center justify-center">{app.menuIcon}</span>
+                <div className="flex flex-col">
+                  <span className={`${fontSize} font-semibold`}>{app.title.split(' - ')[0]}</span>
+                </div>
+              </button>
+            ))}
+            
+            <div className="border-t border-[#ACA899] my-1 mx-3" />
+            
+            {/* All Programs */}
+            <button 
+              className="w-full flex items-center justify-between gap-3 px-3 py-1.5 hover:bg-[#316AC5] hover:text-white text-left text-black"
+              style={{ fontFamily: 'Tahoma, sans-serif' }}
+            >
+              <span className={`${fontSize} font-bold`}>All Programs</span>
+              <span className={fontSize}>▶</span>
+            </button>
+          </div>
+          
+          {/* Right column - blue with system items */}
+          <div 
+            className={`${isMobile ? 'hidden' : 'w-48'} py-1 text-[#21347D]`}
+            style={{ background: '#D3E5FA' }}
+          >
+            {[
+              { icon: '📁', label: 'My Documents' },
+              { icon: '🖼️', label: 'My Pictures' },
+              { icon: '🎵', label: 'My Music' },
+              { icon: '💻', label: 'My Computer' },
+            ].map((item, i) => (
+              <button 
+                key={i}
+                className="w-full flex items-center gap-2 px-3 py-1 hover:bg-[#316AC5] hover:text-white text-left text-[#21347D]"
+                style={{ fontFamily: 'Tahoma, sans-serif' }}
+              >
+                <span className="text-lg">{item.icon}</span>
+                <span className={`${fontSize} font-semibold`}>{item.label}</span>
+              </button>
+            ))}
+            
+            <div className="border-t border-[#9BBAD8] my-1 mx-2" />
+            
+            {[
+              { icon: '⚙️', label: 'Control Panel' },
+              { icon: '🖨️', label: 'Printers and Faxes' },
+              { icon: '❓', label: 'Help and Support' },
+              { icon: '🔍', label: 'Search' },
+              { icon: '▶️', label: 'Run...' },
+            ].map((item, i) => (
+              <button 
+                key={i}
+                className="w-full flex items-center gap-2 px-3 py-1 hover:bg-[#316AC5] hover:text-white text-left text-[#21347D]"
+                style={{ fontFamily: 'Tahoma, sans-serif' }}
+              >
+                <span className="text-lg">{item.icon}</span>
+                <span className={fontSize}>{item.label}</span>
+              </button>
+            ))}
+            
+            <div className="border-t border-[#9BBAD8] my-1 mx-2" />
+            
+            {/* Switch OS */}
+            <div 
+              className="relative"
+              onMouseEnter={() => setHoveredSubmenu('switchOS')}
+              onMouseLeave={() => setHoveredSubmenu(null)}
+            >
+              <button 
+                className={`w-full flex items-center gap-2 px-3 py-1 text-left ${hoveredSubmenu === 'switchOS' ? 'bg-[#316AC5] text-white' : 'text-[#21347D]'}`}
+                style={{ fontFamily: 'Tahoma, sans-serif' }}
+              >
+                <span className="w-5 flex justify-center">
+                  <ComputerIcon size={20} />
+                </span>
+                <span className={`${fontSize} flex-1`}>Switch OS</span>
+                <span className={fontSize}>▶</span>
+              </button>
+              
+              {hoveredSubmenu === 'switchOS' && (
+                <div 
+                  className="absolute right-full top-0 mr-0 rounded"
+                  style={{ backgroundColor: '#D3E5FA', boxShadow: '-2px 2px 5px rgba(0,0,0,0.3)', border: '1px solid #0054E3' }}
+                >
+                  <div className="py-1 w-36">
+                    {osOptions.map((os) => (
+                      <button
+                        key={os.id}
+                        onClick={() => { onOSChange(os.id); onClose(); }}
+                        className="w-full flex items-center gap-2 px-3 py-1 hover:bg-[#316AC5] hover:text-white text-left text-[#21347D]"
+                        style={{ fontFamily: 'Tahoma, sans-serif' }}
+                      >
+                        <span className={`${fontSize} w-4`}>{currentOS === os.id ? '✓' : ''}</span>
+                        <span className={fontSize}>{os.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {/* Footer with Log Off and Turn Off */}
+        <div 
+          className="flex items-center justify-end gap-2 px-2 py-1"
+          style={{ background: 'linear-gradient(to bottom, #3A80D2 0%, #2968B8 100%)' }}
+        >
+          <button 
+            className="flex items-center gap-1 px-3 py-1 text-white hover:brightness-110 rounded"
+            style={{ fontFamily: 'Tahoma, sans-serif', fontSize: '11px' }}
+          >
+            <span>🔓</span>
+            <span>Log Off</span>
+          </button>
+          <button 
+            className="flex items-center gap-1 px-3 py-1 text-white hover:brightness-110 rounded"
+            style={{ 
+              fontFamily: 'Tahoma, sans-serif', fontSize: '11px',
+              background: 'linear-gradient(to bottom, #D64D37 0%, #C23A26 100%)',
+              border: '1px solid #8B2213'
+            }}
+          >
+            <span>⏻</span>
+            <span>Turn Off Computer</span>
           </button>
         </div>
       </div>
@@ -1189,6 +2007,97 @@ const Taskbar95 = ({ apps, windows, onAppClick, onStartClick, isStartOpen, isMob
   );
 };
 
+// Windows XP Taskbar
+const TaskbarXP = ({ apps, windows, onAppClick, onStartClick, isStartOpen, isMobile }) => {
+  const [time, setTime] = useState(new Date());
+  
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const taskbarHeight = isMobile ? 'h-14' : 'h-[30px]';
+  const buttonHeight = isMobile ? 'h-10' : 'h-[22px]';
+  const fontSize = isMobile ? 'text-sm' : 'text-xs';
+  
+  return (
+    <div 
+      className={`absolute bottom-0 left-0 right-0 ${taskbarHeight} flex items-center px-1 gap-1`} 
+      style={{ 
+        background: colorsXP.taskbar,
+        borderTop: '1px solid #0C59CC',
+      }}
+    >
+      {/* XP Start Button */}
+      <button 
+        onClick={onStartClick}
+        className={`flex items-center gap-1.5 ${isMobile ? 'h-11 px-3' : 'h-[26px] px-2'} rounded-r-lg text-white font-bold shadow-md transition-all`}
+        style={{ 
+          background: isStartOpen ? colorsXP.startBtnGreenActive : colorsXP.startBtnGreen,
+          fontFamily: 'Trebuchet MS, Tahoma, sans-serif',
+          fontSize: isMobile ? '14px' : '12px',
+          textShadow: '1px 1px 1px rgba(0,0,0,0.3)',
+          border: '1px solid #2D9B1D',
+          borderLeft: 'none',
+          marginLeft: '-1px',
+        }}
+        onMouseEnter={(e) => { if (!isStartOpen) e.currentTarget.style.background = colorsXP.startBtnGreenHover; }}
+        onMouseLeave={(e) => { if (!isStartOpen) e.currentTarget.style.background = colorsXP.startBtnGreen; }}
+      >
+        {/* Windows XP Logo */}
+        <svg viewBox="0 0 20 20" className={isMobile ? 'w-6 h-6' : 'w-4 h-4'}>
+          <circle cx="10" cy="10" r="9" fill="#3C8D2F" stroke="#2D7B1F" strokeWidth="1"/>
+          <g transform="translate(4, 4)">
+            <rect x="0" y="0" width="5" height="5" fill="#FF6D00" rx="0.5"/>
+            <rect x="6" y="0" width="5" height="5" fill="#04AEF4" rx="0.5"/>
+            <rect x="0" y="6" width="5" height="5" fill="#00AD45" rx="0.5"/>
+            <rect x="6" y="6" width="5" height="5" fill="#FFCD00" rx="0.5"/>
+          </g>
+        </svg>
+        <span className="italic">start</span>
+      </button>
+      
+      {/* Quick Launch divider */}
+      <div className={`w-px ${isMobile ? 'h-8' : 'h-5'} mx-1`} style={{ background: 'linear-gradient(to bottom, #1956C7 0%, #5A8AD7 50%, #1956C7 100%)' }} />
+      
+      {/* Task buttons area */}
+      <div className="flex-1 flex gap-1 overflow-hidden px-1">
+        {apps.filter(app => windows[app.id]?.isOpen).map((app) => (
+          <button
+            key={app.id}
+            onClick={() => onAppClick(app.id)}
+            className={`${buttonHeight} px-2 flex items-center gap-2 ${fontSize} ${isMobile ? 'min-w-[60px]' : 'min-w-[140px] max-w-[180px]'} truncate rounded text-white`}
+            style={{ 
+              background: windows[app.id]?.isMinimized 
+                ? 'linear-gradient(to bottom, #3C81E0 0%, #2F6FD1 50%, #1C5BBF 100%)'
+                : 'linear-gradient(to bottom, #1C5BBF 0%, #1554B5 50%, #0F44A0 100%)',
+              border: '1px solid #0C3B8B',
+              fontFamily: 'Tahoma, sans-serif',
+              textShadow: '1px 1px 1px rgba(0,0,0,0.3)',
+            }}
+          >
+            <span className={`${isMobile ? 'w-5' : 'w-4'} shrink-0`}>{app.menuIcon}</span>
+            {!isMobile && <span className="truncate">{app.title}</span>}
+          </button>
+        ))}
+      </div>
+      
+      {/* System tray */}
+      <div 
+        className={`${buttonHeight} px-3 flex items-center gap-2 ${fontSize} text-white rounded`}
+        style={{ 
+          background: 'linear-gradient(to bottom, #0F6DD6 0%, #1563CC 50%, #0A51A8 100%)',
+          border: '1px solid #0C3B8B',
+          fontFamily: 'Tahoma, sans-serif',
+        }}
+      >
+        <span>🔊</span>
+        <span>{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+      </div>
+    </div>
+  );
+};
+
 // App Contents
 const AboutContent = () => (
   <div className="p-3" style={{ fontFamily: '"MS Sans Serif", Tahoma, sans-serif', fontSize: '11px' }}>
@@ -1231,72 +2140,83 @@ const AboutContent = () => (
   </div>
 );
 
-const ProjectsContent = ({ onOpenProject }: { onOpenProject?: (id: string) => void }) => (
-  <div className="h-full flex flex-col" style={{ fontFamily: '"MS Sans Serif", Tahoma, sans-serif', fontSize: '11px' }}>
-    <div className="flex items-center gap-1 p-1 border-b border-[#808080]">
-      <span className="px-1">📁</span>
-      <span>C:\Portfolio\Projects</span>
-    </div>
-    
-    <div className="flex-1 p-2 overflow-auto">
-      {/* Project Cards */}
-      <div className="space-y-2">
-        <button 
-          onClick={() => {
-            onOpenProject?.('vmware-case');
-            onOpenProject?.('global-search-gallery');
-          }}
-          className="w-full text-left p-2 cursor-pointer hover:brightness-95 active:brightness-90" 
-          style={{ backgroundColor: colors.gray, ...raised }}
-        >
-          <div className="flex items-start gap-2">
-            <PixelIcon type="notepad" size={32} />
-            <div className="flex-1">
-              <h3 className="font-bold text-[12px] text-[#0000ff] underline">VMware - Global Search</h3>
-              <p className="text-[10px] text-[#808080]">2023 | VMware</p>
-              <p className="text-[11px] mt-1">Created a unified search experience across all VMware services. Led UX/UI design, user research, and proof of concept development.</p>
-              <div className="flex gap-1 mt-1 flex-wrap">
-                {['UX/UI Design', 'User Research', 'POC'].map((tag, i) => (
-                  <span key={i} className="px-1 text-[9px]" style={{ backgroundColor: '#e0e0e0', ...inset }}>
-                    {tag}
-                  </span>
-                ))}
+const ProjectsContent = ({ onOpenProject, currentOS = 'win95' }: { onOpenProject?: (id: string) => void; currentOS?: string }) => {
+  const isXP = currentOS === 'winxp';
+  const bgColor = isXP ? colorsXP.windowBg : colors.gray;
+  const buttonBorder = isXP ? raisedXP : raised;
+  const tagStyle = isXP ? insetXP : inset;
+  const borderColor = isXP ? '#ACA899' : '#808080';
+  const fontFamily = isXP ? 'Tahoma, sans-serif' : '"MS Sans Serif", Tahoma, sans-serif';
+  const linkColor = isXP ? '#0066CC' : '#0000ff';
+  const IconComponent = isXP ? XPIcon : PixelIcon;
+
+  return (
+    <div className="h-full flex flex-col" style={{ fontFamily, fontSize: '11px' }}>
+      <div className={`flex items-center gap-1 p-1 border-b`} style={{ borderColor }}>
+        <span className="px-1">📁</span>
+        <span>{isXP ? 'C:\\Documents and Settings\\Ryan\\Projects' : 'C:\\Portfolio\\Projects'}</span>
+      </div>
+      
+      <div className="flex-1 p-2 overflow-auto">
+        {/* Project Cards */}
+        <div className="space-y-2">
+          <button 
+            onClick={() => {
+              onOpenProject?.('vmware-case');
+              onOpenProject?.('global-search-gallery');
+            }}
+            className={`w-full text-left p-2 cursor-pointer hover:brightness-95 active:brightness-90 ${isXP ? 'rounded' : ''}`}
+            style={{ backgroundColor: bgColor, ...buttonBorder }}
+          >
+            <div className="flex items-start gap-2">
+              <IconComponent type="notepad" size={32} />
+              <div className="flex-1">
+                <h3 className="font-bold text-[12px] underline" style={{ color: linkColor }}>VMware - Global Search</h3>
+                <p className="text-[10px]" style={{ color: borderColor }}>2023 | VMware</p>
+                <p className="text-[11px] mt-1">Created a unified search experience across all VMware services. Led UX/UI design, user research, and proof of concept development.</p>
+                <div className="flex gap-1 mt-1 flex-wrap">
+                  {['UX/UI Design', 'User Research', 'POC'].map((tag, i) => (
+                    <span key={i} className={`px-1 text-[9px] ${isXP ? 'rounded' : ''}`} style={{ backgroundColor: isXP ? '#F1EFE2' : '#e0e0e0', ...tagStyle }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-[9px] mt-1" style={{ color: borderColor }}>📄 Click to view case study + screenshots</p>
               </div>
-              <p className="text-[9px] text-[#808080] mt-1">📄 Click to view case study + screenshots</p>
             </div>
-          </div>
-        </button>
-        
-        <button 
-          onClick={() => onOpenProject?.('island-health-case')}
-          className="w-full text-left p-2 cursor-pointer hover:brightness-95 active:brightness-90" 
-          style={{ backgroundColor: colors.gray, ...raised }}
-        >
-          <div className="flex items-start gap-2">
-            <PixelIcon type="notepad" size={32} />
-            <div className="flex-1">
-              <h3 className="font-bold text-[12px] text-[#0000ff] underline">Island Health - Website</h3>
-              <p className="text-[10px] text-[#808080]">2021 | Brick & Brine Creative Agency</p>
-              <p className="text-[11px] mt-1">Redesigned the website for Island Health hospital in Anacortes, WA serving 130,000+ locals. Conducted user research, created wireframes, prototypes, and usability tests.</p>
-              <div className="flex gap-1 mt-1 flex-wrap">
-                {['UX/UI Design', 'User Research', 'Web'].map((tag, i) => (
-                  <span key={i} className="px-1 text-[9px]" style={{ backgroundColor: '#e0e0e0', ...inset }}>
-                    {tag}
-                  </span>
-                ))}
+          </button>
+          
+          <button 
+            onClick={() => onOpenProject?.('island-health-case')}
+            className={`w-full text-left p-2 cursor-pointer hover:brightness-95 active:brightness-90 ${isXP ? 'rounded' : ''}`}
+            style={{ backgroundColor: bgColor, ...buttonBorder }}
+          >
+            <div className="flex items-start gap-2">
+              <IconComponent type="notepad" size={32} />
+              <div className="flex-1">
+                <h3 className="font-bold text-[12px] underline" style={{ color: linkColor }}>Island Health - Website</h3>
+                <p className="text-[10px]" style={{ color: borderColor }}>2021 | Brick & Brine Creative Agency</p>
+                <p className="text-[11px] mt-1">Redesigned the website for Island Health hospital in Anacortes, WA serving 130,000+ locals. Conducted user research, created wireframes, prototypes, and usability tests.</p>
+                <div className="flex gap-1 mt-1 flex-wrap">
+                  {['UX/UI Design', 'User Research', 'Web'].map((tag, i) => (
+                    <span key={i} className={`px-1 text-[9px] ${isXP ? 'rounded' : ''}`} style={{ backgroundColor: isXP ? '#F1EFE2' : '#e0e0e0', ...tagStyle }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-[9px] mt-1" style={{ color: borderColor }}>📄 Click to view case study</p>
               </div>
-              <p className="text-[9px] text-[#808080] mt-1">📄 Click to view case study</p>
             </div>
-          </div>
-        </button>
+          </button>
+        </div>
+      </div>
+      
+      <div className="px-2 py-1 border-t text-[10px]" style={{ borderColor, color: borderColor }}>
+        2 project(s)
       </div>
     </div>
-    
-    <div className="px-2 py-1 border-t border-white text-[10px] text-[#808080]" style={{ borderTopColor: '#808080' }}>
-      2 project(s)
-    </div>
-  </div>
-);
+  );
+};
 
 const ContactContent = () => (
   <div className="p-3" style={{ fontFamily: '"MS Sans Serif", Tahoma, sans-serif', fontSize: '11px' }}>
@@ -1551,8 +2471,16 @@ IMPROVEMENTS:
 );
 
 // Global Search Gallery Component
-const GlobalSearchGallery = () => {
+const GlobalSearchGallery = ({ currentOS = 'win95' }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  // OS-specific styling
+  const isXP = currentOS === 'winxp';
+  const bgColor = isXP ? colorsXP.windowBg : colors.gray;
+  const buttonBorder = isXP ? raisedXP : raised;
+  const borderStyle = isXP ? insetXP : inset;
+  const borderColor = isXP ? '#ACA899' : colors.darkGray;
+  const fontFamily = isXP ? 'Tahoma, sans-serif' : '"MS Sans Serif", Tahoma, sans-serif';
   
   const images = [
     { src: '/gs1.png', label: 'Screenshot 1' },
@@ -1576,13 +2504,13 @@ const GlobalSearchGallery = () => {
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ fontFamily: '"MS Sans Serif", Tahoma, sans-serif', fontSize: '11px', backgroundColor: colors.gray }}>
+    <div className="h-full flex flex-col" style={{ fontFamily, fontSize: '11px', backgroundColor: bgColor }}>
       {/* Navigation bar */}
-      <div className="flex items-center justify-between p-2 border-b" style={{ borderColor: colors.darkGray }}>
+      <div className="flex items-center justify-between p-2 border-b" style={{ borderColor }}>
         <button
           onClick={goToPrev}
-          className="px-3 py-1 cursor-pointer"
-          style={{ ...raised, backgroundColor: colors.gray }}
+          className={`px-3 py-1 cursor-pointer ${isXP ? 'rounded' : ''}`}
+          style={{ ...buttonBorder, backgroundColor: bgColor }}
         >
           &lt; Prev
         </button>
@@ -1591,8 +2519,8 @@ const GlobalSearchGallery = () => {
         </span>
         <button
           onClick={goToNext}
-          className="px-3 py-1 cursor-pointer"
-          style={{ ...raised, backgroundColor: colors.gray }}
+          className={`px-3 py-1 cursor-pointer ${isXP ? 'rounded' : ''}`}
+          style={{ ...buttonBorder, backgroundColor: bgColor }}
         >
           Next &gt;
         </button>
@@ -1601,8 +2529,8 @@ const GlobalSearchGallery = () => {
       {/* Main preview area */}
       <div className="flex-1 p-2 overflow-hidden">
         <div 
-          className="w-full h-full flex items-center justify-center"
-          style={{ ...inset, backgroundColor: '#ffffff' }}
+          className={`w-full h-full flex items-center justify-center ${isXP ? 'rounded' : ''}`}
+          style={{ ...borderStyle, backgroundColor: '#ffffff' }}
         >
           <img
             src={images[selectedIndex].src}
@@ -1614,7 +2542,7 @@ const GlobalSearchGallery = () => {
       </div>
 
       {/* Thumbnail strip */}
-      <div className="p-2 border-t" style={{ borderColor: colors.darkGray }}>
+      <div className="p-2 border-t" style={{ borderColor }}>
         <div 
           className="flex gap-1 overflow-x-auto pb-1"
           style={{ scrollbarWidth: 'thin' }}
@@ -1623,12 +2551,13 @@ const GlobalSearchGallery = () => {
             <button
               key={index}
               onClick={() => setSelectedIndex(index)}
-              className="shrink-0 cursor-pointer p-1"
+              className={`shrink-0 cursor-pointer p-1 ${isXP ? 'rounded' : ''}`}
               style={{
-                ...(index === selectedIndex ? inset : raised),
-                backgroundColor: index === selectedIndex ? colors.white : colors.gray,
+                ...(index === selectedIndex ? borderStyle : buttonBorder),
+                backgroundColor: index === selectedIndex ? (isXP ? '#D3E5FA' : colors.white) : bgColor,
                 width: '60px',
                 height: '45px',
+                border: index === selectedIndex && isXP ? '2px solid #316AC5' : undefined,
               }}
             >
               <img
@@ -1862,7 +2791,7 @@ const ResumeContent = () => (
 );
 
 // Paint App
-const PaintContent = () => {
+const PaintContent = ({ currentOS = 'win95' }) => {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [tool, setTool] = useState('pencil');
@@ -1872,6 +2801,13 @@ const PaintContent = () => {
   const lastPos = useRef({ x: 0, y: 0 });
   const startPos = useRef({ x: 0, y: 0 });
   const [canvasHistory, setCanvasHistory] = useState([]);
+
+  // OS-specific styling
+  const isXP = currentOS === 'winxp';
+  const bgColor = isXP ? colorsXP.windowBg : colors.gray;
+  const borderStyle = isXP ? insetXP : inset;
+  const buttonBorder = isXP ? raisedXP : raised;
+  const borderColor = isXP ? '#ACA899' : '#808080';
 
   const paintColors = [
     '#000000', '#808080', '#800000', '#808000', '#008000', '#008080', '#000080', '#800080',
@@ -2073,54 +3009,54 @@ const PaintContent = () => {
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ backgroundColor: colors.gray, color: colors.black }}>
+    <div className="h-full flex flex-col" style={{ backgroundColor: bgColor, color: colors.black }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-1 p-1 border-b border-[#808080]" style={{ backgroundColor: colors.gray }}>
+      <div className={`flex items-center gap-1 p-1 border-b`} style={{ backgroundColor: bgColor, borderColor }}>
         {tools.map(t => (
           <button
             key={t.id}
             onClick={() => setTool(t.id)}
             title={t.title}
-            className="w-6 h-6 flex items-center justify-center text-xs"
+            className={`w-6 h-6 flex items-center justify-center text-xs ${isXP ? 'rounded' : ''}`}
             style={{
-              backgroundColor: colors.gray,
-              ...(tool === t.id ? inset : raised),
+              backgroundColor: bgColor,
+              ...(tool === t.id ? borderStyle : buttonBorder),
             }}
           >
             {t.label}
           </button>
         ))}
-        <div className="w-px h-5 bg-[#808080] mx-1" />
+        <div className="w-px h-5 mx-1" style={{ backgroundColor: borderColor }} />
         <select 
           value={brushSize} 
           onChange={(e) => setBrushSize(Number(e.target.value))}
-          className="text-[10px] px-1"
-          style={{ backgroundColor: 'white', color: 'black' }}
+          className={`text-[10px] px-1 ${isXP ? 'rounded' : ''}`}
+          style={{ backgroundColor: 'white', color: 'black', border: `1px solid ${borderColor}` }}
         >
           <option value={1}>1px</option>
           <option value={2}>2px</option>
           <option value={4}>4px</option>
           <option value={8}>8px</option>
         </select>
-        <div className="w-px h-5 bg-[#808080] mx-1" />
-        <button onClick={undo} className="px-2 h-6 text-[10px]" style={{ backgroundColor: colors.gray, ...raised }}>Undo</button>
-        <button onClick={clearCanvas} className="px-2 h-6 text-[10px]" style={{ backgroundColor: colors.gray, ...raised }}>Clear</button>
+        <div className="w-px h-5 mx-1" style={{ backgroundColor: borderColor }} />
+        <button onClick={undo} className={`px-2 h-6 text-[10px] ${isXP ? 'rounded' : ''}`} style={{ backgroundColor: bgColor, ...buttonBorder }}>Undo</button>
+        <button onClick={clearCanvas} className={`px-2 h-6 text-[10px] ${isXP ? 'rounded' : ''}`} style={{ backgroundColor: bgColor, ...buttonBorder }}>Clear</button>
         <div className="flex-1" />
-        <button onClick={saveImage} className="px-2 h-6 text-[10px]" style={{ backgroundColor: colors.gray, ...raised }}>💾 Save</button>
+        <button onClick={saveImage} className={`px-2 h-6 text-[10px] ${isXP ? 'rounded' : ''}`} style={{ backgroundColor: bgColor, ...buttonBorder }}>💾 Save</button>
       </div>
       
       <div className="flex flex-1 min-h-0">
         {/* Tool panel */}
-        <div className="w-10 p-1 flex flex-col gap-1 border-r border-[#808080]" style={{ backgroundColor: colors.gray }}>
+        <div className="w-10 p-1 flex flex-col gap-1 border-r" style={{ backgroundColor: bgColor, borderColor }}>
           {/* Color preview */}
-          <div className="relative w-8 h-8 mb-1" style={raised}>
+          <div className={`relative w-8 h-8 mb-1 ${isXP ? 'rounded' : ''}`} style={buttonBorder}>
             <div 
-              className="absolute top-0 left-0 w-5 h-5 border border-black" 
+              className={`absolute top-0 left-0 w-5 h-5 border border-black ${isXP ? 'rounded-sm' : ''}`}
               style={{ backgroundColor: color }}
               title="Primary color (left click)"
             />
             <div 
-              className="absolute bottom-0 right-0 w-5 h-5 border border-black" 
+              className={`absolute bottom-0 right-0 w-5 h-5 border border-black ${isXP ? 'rounded-sm' : ''}`}
               style={{ backgroundColor: secondaryColor }}
               title="Secondary color (right click)"
             />
@@ -2128,7 +3064,7 @@ const PaintContent = () => {
         </div>
         
         {/* Canvas area */}
-        <div className="flex-1 overflow-auto p-1" style={{ backgroundColor: '#808080' }}>
+        <div className="flex-1 overflow-auto p-1" style={{ backgroundColor: isXP ? '#7A96DF' : '#808080' }}>
           <canvas
             ref={canvasRef}
             width={400}
@@ -2147,11 +3083,11 @@ const PaintContent = () => {
       </div>
       
       {/* Color palette */}
-      <div className="flex items-center gap-px p-1 border-t border-white" style={{ backgroundColor: colors.gray }}>
+      <div className={`flex items-center gap-px p-1 border-t`} style={{ backgroundColor: bgColor, borderColor: isXP ? borderColor : 'white' }}>
         {paintColors.map((c, i) => (
           <button
             key={i}
-            className="w-4 h-4 border border-black"
+            className={`w-4 h-4 border border-black ${isXP ? 'rounded-sm' : ''}`}
             style={{ backgroundColor: c }}
             onClick={() => setColor(c)}
             onContextMenu={(e) => { e.preventDefault(); setSecondaryColor(c); }}
@@ -2463,7 +3399,7 @@ const Visualizer = ({
 };
 
 // Main Media Player Component
-const MediaPlayerContent = () => {
+const MediaPlayerContent = ({ currentOS = 'win95' }) => {
   const { 
     queue, 
     currentTrack, 
@@ -2496,6 +3432,9 @@ const MediaPlayerContent = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const albumMenuRef = useRef<HTMLDivElement>(null);
   const dbRef = useRef<IDBDatabase | null>(null);
+
+  // OS-specific styling for classic skin
+  const isXP = currentOS === 'winxp';
   
   const currentSkin = MEDIA_PLAYER_SKINS[skin];
   
@@ -2761,9 +3700,14 @@ const MediaPlayerContent = () => {
   const displayIndex = currentIndex >= 0 ? currentIndex : 0;
   const albumArt = displayTrack ? getAlbumArt(displayTrack) : '';
 
+  // Classic skin colors based on OS
+  const classicBgColor = skin === 'classic' && isXP ? colorsXP.windowBg : '#c0c0c0';
+  const classicBorderColor = skin === 'classic' && isXP ? '#ACA899' : '#808080';
+  const classicBorderStyle = skin === 'classic' && isXP ? raisedXP : raised;
+
   // Button style based on skin
   const buttonStyle = {
-    backgroundColor: currentSkin.buttonBg,
+    backgroundColor: skin === 'classic' && isXP ? colorsXP.windowBg : currentSkin.buttonBg,
     color: currentSkin.buttonText,
     border: skin === 'winamp' 
       ? '1px solid #555' 
@@ -2771,14 +3715,15 @@ const MediaPlayerContent = () => {
     boxShadow: skin === 'winamp'
       ? 'inset 1px 1px 0 #4a4a4a, inset -1px -1px 0 #1a1a1a'
       : undefined,
-    ...(skin !== 'winamp' && skin !== 'synthwave' ? raised : {}),
+    ...(skin !== 'winamp' && skin !== 'synthwave' ? classicBorderStyle : {}),
+    borderRadius: skin === 'classic' && isXP ? '3px' : undefined,
   };
 
   return (
     <div 
       className="h-full flex flex-col overflow-hidden"
       style={{ 
-        background: currentSkin.bg, 
+        background: skin === 'classic' && isXP ? colorsXP.windowBg : currentSkin.bg, 
         color: currentSkin.text,
       }}
     >
@@ -2796,8 +3741,8 @@ const MediaPlayerContent = () => {
       <div 
         className="flex items-center gap-2 px-1 py-0.5 text-[11px]"
         style={{ 
-          backgroundColor: skin === 'winamp' ? '#2a2a2a' : (skin === 'synthwave' ? '#1a0a2e' : '#c0c0c0'),
-          borderBottom: '1px solid #808080',
+          backgroundColor: skin === 'winamp' ? '#2a2a2a' : (skin === 'synthwave' ? '#1a0a2e' : classicBgColor),
+          borderBottom: `1px solid ${classicBorderColor}`,
         }}
       >
         {/* Albums dropdown */}
@@ -2815,10 +3760,10 @@ const MediaPlayerContent = () => {
           {/* Dropdown menu */}
           {showAlbumMenu && (
             <div 
-              className="absolute top-full left-0 z-50 min-w-[180px] py-0.5 shadow-lg"
+              className={`absolute top-full left-0 z-50 min-w-[180px] py-0.5 shadow-lg ${skin === 'classic' && isXP ? 'rounded' : ''}`}
               style={{ 
-                backgroundColor: skin === 'winamp' ? '#2a2a2a' : (skin === 'synthwave' ? '#1a0a2e' : '#c0c0c0'),
-                border: '1px solid #808080',
+                backgroundColor: skin === 'winamp' ? '#2a2a2a' : (skin === 'synthwave' ? '#1a0a2e' : classicBgColor),
+                border: `1px solid ${classicBorderColor}`,
               }}
             >
               {ALBUMS.map((album) => (
@@ -2874,10 +3819,10 @@ const MediaPlayerContent = () => {
           
           {/* Style dropdown on hover */}
           <div 
-            className="absolute top-full left-0 z-50 min-w-[100px] py-0.5 shadow-lg hidden group-hover:block"
+            className={`absolute top-full left-0 z-50 min-w-[100px] py-0.5 shadow-lg hidden group-hover:block ${skin === 'classic' && isXP ? 'rounded' : ''}`}
             style={{ 
-              backgroundColor: skin === 'winamp' ? '#2a2a2a' : (skin === 'synthwave' ? '#1a0a2e' : '#c0c0c0'),
-              border: '1px solid #808080',
+              backgroundColor: skin === 'winamp' ? '#2a2a2a' : (skin === 'synthwave' ? '#1a0a2e' : classicBgColor),
+              border: `1px solid ${classicBorderColor}`,
             }}
           >
             {(Object.keys(MEDIA_PLAYER_SKINS) as MediaPlayerSkin[]).map((s) => (
@@ -3044,11 +3989,11 @@ const MediaPlayerContent = () => {
 
       {/* Playlist */}
       <div 
-        className="flex-1 mx-2 mb-2 mt-1 overflow-auto"
+        className={`flex-1 mx-2 mb-2 mt-1 overflow-auto ${skin === 'classic' && isXP ? 'rounded' : ''}`}
         style={{ 
           backgroundColor: skin === 'winamp' ? '#0a0a0a' : (skin === 'synthwave' ? '#0d0620' : '#fff'),
           color: skin === 'winamp' || skin === 'synthwave' ? currentSkin.text : '#000',
-          border: '2px inset #808080',
+          border: skin === 'classic' && isXP ? `1px solid ${classicBorderColor}` : '2px inset #808080',
         }}
       >
         {/* Empty state for My Music */}
@@ -3287,6 +4232,7 @@ export default function Windows95Portfolio() {
   const [topZIndex, setTopZIndex] = useState(2);
   const [isStartOpen, setIsStartOpen] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState(null);
+  const [currentOS, setCurrentOS] = useState<'win95' | 'winxp'>('win95');
 
   // On mobile, only show one window at boot (About Me)
   useEffect(() => {
@@ -3329,18 +4275,28 @@ export default function Windows95Portfolio() {
   // Mobile-friendly icon sizes
   const iconSize = isMobile ? 20 : 16;
   const desktopIconSize = isMobile ? 40 : 32;
+  const desktopIconSizeXP = isMobile ? 48 : 40;
+
+  // OS-aware icon helper
+  const getIcon = (type: string, size: number) => {
+    return currentOS === 'winxp' 
+      ? <XPIcon type={type} size={size} /> 
+      : <PixelIcon type={type} size={size} />;
+  };
+
+  const currentDesktopIconSize = currentOS === 'winxp' ? desktopIconSizeXP : desktopIconSize;
 
   const desktopIcons = [
-    { id: 'about', label: 'About Me', icon: <PixelIcon type="user" size={desktopIconSize} /> },
-    { id: 'projects', label: 'My Projects', icon: <PixelIcon type="folder" size={desktopIconSize} /> },
-    { id: 'resume', label: 'Resume', icon: <PixelIcon type="notepad" size={desktopIconSize} /> },
-    { id: 'contact', label: 'Contact', icon: <PixelIcon type="mail" size={desktopIconSize} /> },
-    { id: 'terminal', label: 'MS-DOS', icon: <PixelIcon type="terminal" size={desktopIconSize} /> },
-    { id: 'notepad', label: 'README', icon: <PixelIcon type="notepad" size={desktopIconSize} /> },
-    { id: 'minesweeper', label: 'Minesweeper', icon: <PixelIcon type="minesweeper" size={desktopIconSize} /> },
-    { id: 'paint', label: 'Paint', icon: <PixelIcon type="paint" size={desktopIconSize} /> },
-    { id: 'media', label: 'Media Player', icon: <PixelIcon type="media" size={desktopIconSize} /> },
-    { id: 'recycle', label: 'Recycle Bin', icon: <PixelIcon type="recycle" size={desktopIconSize} /> },
+    { id: 'about', label: 'About Me', icon: getIcon('user', currentDesktopIconSize) },
+    { id: 'projects', label: 'My Projects', icon: getIcon('folder', currentDesktopIconSize) },
+    { id: 'resume', label: 'Resume', icon: getIcon('notepad', currentDesktopIconSize) },
+    { id: 'contact', label: 'Contact', icon: getIcon('mail', currentDesktopIconSize) },
+    { id: 'terminal', label: currentOS === 'winxp' ? 'Command Prompt' : 'MS-DOS', icon: getIcon('terminal', currentDesktopIconSize) },
+    { id: 'notepad', label: 'README', icon: getIcon('notepad', currentDesktopIconSize) },
+    { id: 'minesweeper', label: 'Minesweeper', icon: getIcon('minesweeper', currentDesktopIconSize) },
+    { id: 'paint', label: 'Paint', icon: getIcon('paint', currentDesktopIconSize) },
+    { id: 'media', label: currentOS === 'winxp' ? 'Windows Media Player' : 'Media Player', icon: getIcon('media', currentDesktopIconSize) },
+    { id: 'recycle', label: 'Recycle Bin', icon: getIcon('recycle', currentDesktopIconSize) },
   ];
 
   const bringToFront = (id) => {
@@ -3373,18 +4329,18 @@ export default function Windows95Portfolio() {
 
   // Apps array defined after openApp so it can be passed as prop
   const apps = [
-    { id: 'about', title: 'About Me', menuIcon: <PixelIcon type="user" size={iconSize} />, content: <AboutContent /> },
-    { id: 'projects', title: 'My Projects', menuIcon: <PixelIcon type="folder" size={iconSize} />, content: <ProjectsContent onOpenProject={openApp} /> },
-    { id: 'resume', title: 'Resume.doc - Microsoft Word', menuIcon: <PixelIcon type="notepad" size={iconSize} />, content: <ResumeContent /> },
-    { id: 'contact', title: 'Contact', menuIcon: <PixelIcon type="mail" size={iconSize} />, content: <ContactContent /> },
-    { id: 'terminal', title: 'MS-DOS Prompt', menuIcon: <PixelIcon type="terminal" size={iconSize} />, content: <TerminalContent /> },
-    { id: 'notepad', title: 'README.txt - Notepad', menuIcon: <PixelIcon type="notepad" size={iconSize} />, content: <NotepadContent /> },
-    { id: 'vmware-case', title: 'GlobalSearch.txt - Notepad', menuIcon: <PixelIcon type="notepad" size={iconSize} />, content: <VMwareCaseStudy /> },
-    { id: 'global-search-gallery', title: 'Global Search - Screenshots', menuIcon: <PixelIcon type="folder" size={iconSize} />, content: <GlobalSearchGallery />, hideMenuBar: true },
-    { id: 'island-health-case', title: 'IslandHealth.txt - Notepad', menuIcon: <PixelIcon type="notepad" size={iconSize} />, content: <IslandHealthCaseStudy /> },
-    { id: 'minesweeper', title: 'Minesweeper', menuIcon: <PixelIcon type="minesweeper" size={iconSize} />, content: <Minesweeper />, hideMenuBar: true },
-    { id: 'paint', title: 'untitled - Paint', menuIcon: <PixelIcon type="paint" size={iconSize} />, content: <PaintContent />, hideMenuBar: true },
-    { id: 'media', title: 'Windows Media Player - 1995 Hits', menuIcon: <PixelIcon type="media" size={iconSize} />, content: <MediaPlayerContent />, hideMenuBar: true },
+    { id: 'about', title: 'About Me', menuIcon: getIcon('user', iconSize), content: <AboutContent currentOS={currentOS} /> },
+    { id: 'projects', title: 'My Projects', menuIcon: getIcon('folder', iconSize), content: <ProjectsContent onOpenProject={openApp} currentOS={currentOS} /> },
+    { id: 'resume', title: 'Resume.doc - Microsoft Word', menuIcon: getIcon('notepad', iconSize), content: <ResumeContent currentOS={currentOS} /> },
+    { id: 'contact', title: 'Contact', menuIcon: getIcon('mail', iconSize), content: <ContactContent currentOS={currentOS} /> },
+    { id: 'terminal', title: currentOS === 'winxp' ? 'Command Prompt' : 'MS-DOS Prompt', menuIcon: getIcon('terminal', iconSize), content: <TerminalContent currentOS={currentOS} /> },
+    { id: 'notepad', title: 'README.txt - Notepad', menuIcon: getIcon('notepad', iconSize), content: <NotepadContent currentOS={currentOS} /> },
+    { id: 'vmware-case', title: 'GlobalSearch.txt - Notepad', menuIcon: getIcon('notepad', iconSize), content: <VMwareCaseStudy currentOS={currentOS} /> },
+    { id: 'global-search-gallery', title: 'Global Search - Screenshots', menuIcon: getIcon('folder', iconSize), content: <GlobalSearchGallery currentOS={currentOS} />, hideMenuBar: true },
+    { id: 'island-health-case', title: 'IslandHealth.txt - Notepad', menuIcon: getIcon('notepad', iconSize), content: <IslandHealthCaseStudy currentOS={currentOS} /> },
+    { id: 'minesweeper', title: 'Minesweeper', menuIcon: getIcon('minesweeper', iconSize), content: <Minesweeper currentOS={currentOS} />, hideMenuBar: true },
+    { id: 'paint', title: 'untitled - Paint', menuIcon: getIcon('paint', iconSize), content: <PaintContent currentOS={currentOS} />, hideMenuBar: true },
+    { id: 'media', title: currentOS === 'winxp' ? 'Windows Media Player' : 'Windows Media Player - 1995 Hits', menuIcon: getIcon('media', iconSize), content: <MediaPlayerContent currentOS={currentOS} />, hideMenuBar: true },
   ];
 
   const closeWindow = (id) => {
@@ -3432,10 +4388,17 @@ export default function Windows95Portfolio() {
     return <BootScreen onComplete={() => setIsBooting(false)} />;
   }
 
+  // Choose components based on current OS
+  const WindowComponent = currentOS === 'winxp' ? WindowXP : Window95;
+  const StartMenuComponent = currentOS === 'winxp' ? StartMenuXP : StartMenu95;
+  const TaskbarComponent = currentOS === 'winxp' ? TaskbarXP : Taskbar95;
+  const DesktopIconComponent = currentOS === 'winxp' ? DesktopIconXP : DesktopIcon95;
+  const desktopBgColor = currentOS === 'winxp' ? '#3A6EA5' : '#008080';
+
   return (
     <div 
       className="w-full h-screen relative overflow-hidden select-none"
-      style={{ backgroundColor: '#008080' }}
+      style={{ backgroundColor: desktopBgColor }}
       onClick={() => { setSelectedIcon(null); setIsStartOpen(false); }}
     >
       {/* Desktop icons - hidden on mobile when a window is open */}
@@ -3445,7 +4408,7 @@ export default function Windows95Portfolio() {
           onClick={(e) => e.stopPropagation()}
         >
           {desktopIcons.map((item) => (
-            <DesktopIcon95
+            <DesktopIconComponent
               key={item.id}
               icon={item.icon}
               label={item.label}
@@ -3461,7 +4424,7 @@ export default function Windows95Portfolio() {
       {/* Windows */}
       {apps.map((app) => (
         windows[app.id]?.isOpen && (
-          <Window95
+          <WindowComponent
             key={app.id}
             id={app.id}
             title={app.title}
@@ -3483,20 +4446,22 @@ export default function Windows95Portfolio() {
             isTouch={isTouch}
           >
             {app.content}
-          </Window95>
+          </WindowComponent>
         )
       ))}
       
-      {/* Clippy - hidden on mobile */}
-      {showClippy && !isMobile && <Clippy onClose={() => setShowClippy(false)} />}
+      {/* Clippy - hidden on mobile and on XP */}
+      {showClippy && !isMobile && currentOS === 'win95' && <Clippy onClose={() => setShowClippy(false)} />}
       
       {/* Start Menu */}
       {isStartOpen && (
-        <StartMenu95 
+        <StartMenuComponent 
           apps={apps} 
           onAppClick={openApp} 
           onClose={() => setIsStartOpen(false)} 
           isMobile={isMobile}
+          currentOS={currentOS}
+          onOSChange={setCurrentOS}
         />
       )}
       
@@ -3518,7 +4483,7 @@ export default function Windows95Portfolio() {
       )}
       
       {/* Taskbar */}
-      <Taskbar95 
+      <TaskbarComponent 
         apps={apps}
         windows={windows}
         onAppClick={handleTaskbarClick}
