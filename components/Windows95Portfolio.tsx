@@ -36,6 +36,46 @@ const useDeviceMode = () => {
 // Window snapping configuration
 const SNAP_DISTANCE = 12; // pixels - how close before snapping kicks in
 
+// Desktop icon grid configuration
+const DESKTOP_GRID = {
+  cellWidth: 80,      // Width per grid cell
+  cellHeight: 90,     // Height per grid cell  
+  padding: 8,         // Padding from edges
+};
+
+// Hook to calculate desktop grid dimensions based on viewport
+const useDesktopGrid = (isMobile: boolean) => {
+  const taskbarHeight = isMobile ? 56 : 30;
+  const [gridSize, setGridSize] = useState({ cols: 0, rows: 0 });
+
+  useEffect(() => {
+    const updateGrid = () => {
+      const availableHeight = window.innerHeight - taskbarHeight - DESKTOP_GRID.padding * 2;
+      const availableWidth = window.innerWidth - DESKTOP_GRID.padding * 2;
+      setGridSize({
+        cols: Math.max(1, Math.floor(availableWidth / DESKTOP_GRID.cellWidth)),
+        rows: Math.max(1, Math.floor(availableHeight / DESKTOP_GRID.cellHeight)),
+      });
+    };
+
+    updateGrid();
+    window.addEventListener('resize', updateGrid);
+    return () => window.removeEventListener('resize', updateGrid);
+  }, [taskbarHeight]);
+
+  const cellToPixels = (col: number, row: number) => ({
+    x: DESKTOP_GRID.padding + col * DESKTOP_GRID.cellWidth,
+    y: DESKTOP_GRID.padding + row * DESKTOP_GRID.cellHeight,
+  });
+
+  const pixelsToCell = (x: number, y: number) => ({
+    col: Math.max(0, Math.min(gridSize.cols - 1, Math.floor((x - DESKTOP_GRID.padding) / DESKTOP_GRID.cellWidth))),
+    row: Math.max(0, Math.min(gridSize.rows - 1, Math.floor((y - DESKTOP_GRID.padding) / DESKTOP_GRID.cellHeight))),
+  });
+
+  return { gridSize, taskbarHeight, cellToPixels, pixelsToCell };
+};
+
 // Type definitions for window snapping
 type WindowSize = { width: number; height: number };
 type Viewport = { width: number; height: number };
@@ -222,336 +262,39 @@ const insetXP = {
   borderRight: `1px solid ${colorsXP.buttonHighlight}`,
 };
 
-// Pixel Art Icons
+// Pixel Art Icons - Using authentic Windows 95/98 .ico files
 const PixelIcon = ({ type, size = 32 }) => {
+  const iconStyle = { imageRendering: 'pixelated' as const };
   const icons = {
-    computer: (
-      <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
-        <rect x="2" y="2" width="12" height="8" fill="#c0c0c0"/>
-        <rect x="3" y="3" width="10" height="6" fill="#000080"/>
-        <rect x="4" y="4" width="8" height="4" fill="#008080"/>
-        <rect x="5" y="11" width="6" height="1" fill="#c0c0c0"/>
-        <rect x="4" y="12" width="8" height="2" fill="#c0c0c0"/>
-      </svg>
-    ),
-    folder: (
-      <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
-        <rect x="1" y="4" width="14" height="10" fill="#c0a000"/>
-        <rect x="1" y="3" width="6" height="2" fill="#c0a000"/>
-        <rect x="2" y="5" width="12" height="8" fill="#ffff00"/>
-      </svg>
-    ),
-    notepad: (
-      <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
-        <rect x="3" y="1" width="10" height="14" fill="#ffffff"/>
-        <rect x="4" y="1" width="8" height="2" fill="#000080"/>
-        <rect x="5" y="4" width="6" height="1" fill="#000000"/>
-        <rect x="5" y="6" width="6" height="1" fill="#000000"/>
-        <rect x="5" y="8" width="4" height="1" fill="#000000"/>
-        <rect x="5" y="10" width="6" height="1" fill="#000000"/>
-      </svg>
-    ),
-    mail: (
-      <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
-        <rect x="1" y="3" width="14" height="10" fill="#c0c0c0"/>
-        <rect x="2" y="4" width="12" height="8" fill="#ffffff"/>
-        <path d="M2 4 L8 8 L14 4" stroke="#c0a000" strokeWidth="1" fill="none"/>
-        <rect x="2" y="4" width="1" height="1" fill="#c0a000"/>
-        <rect x="13" y="4" width="1" height="1" fill="#c0a000"/>
-      </svg>
-    ),
-    terminal: (
-      <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
-        <rect x="1" y="2" width="14" height="12" fill="#000000"/>
-        <rect x="2" y="3" width="12" height="10" fill="#000000"/>
-        <rect x="3" y="4" width="1" height="1" fill="#c0c0c0"/>
-        <rect x="4" y="4" width="1" height="1" fill="#c0c0c0"/>
-        <rect x="6" y="4" width="4" height="1" fill="#c0c0c0"/>
-        <rect x="3" y="6" width="2" height="1" fill="#00ff00"/>
-      </svg>
-    ),
-    user: (
-      <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
-        <rect x="6" y="2" width="4" height="4" fill="#ffcc99"/>
-        <rect x="5" y="6" width="6" height="6" fill="#000080"/>
-        <rect x="4" y="12" width="8" height="2" fill="#000080"/>
-        <rect x="7" y="3" width="2" height="1" fill="#000000"/>
-      </svg>
-    ),
-    recycle: (
-      <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
-        <rect x="4" y="3" width="8" height="11" fill="#c0c0c0"/>
-        <rect x="5" y="4" width="6" height="9" fill="#ffffff"/>
-        <rect x="3" y="2" width="10" height="2" fill="#c0c0c0"/>
-        <rect x="6" y="1" width="4" height="2" fill="#c0c0c0"/>
-        <rect x="6" y="5" width="1" height="6" fill="#808080"/>
-        <rect x="9" y="5" width="1" height="6" fill="#808080"/>
-      </svg>
-    ),
-    minesweeper: (
-      <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
-        <rect x="1" y="1" width="14" height="14" fill="#c0c0c0"/>
-        <rect x="2" y="2" width="4" height="4" fill="#ffffff"/>
-        <rect x="6" y="2" width="4" height="4" fill="#c0c0c0"/>
-        <rect x="10" y="2" width="4" height="4" fill="#ffffff"/>
-        <rect x="2" y="6" width="4" height="4" fill="#c0c0c0"/>
-        <circle cx="8" cy="8" r="2" fill="#000000"/>
-        <rect x="10" y="6" width="4" height="4" fill="#c0c0c0"/>
-        <rect x="4" y="4" width="1" height="1" fill="#0000ff"/>
-        <rect x="12" y="8" width="1" height="1" fill="#ff0000"/>
-      </svg>
-    ),
-    help: (
-      <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
-        <rect x="2" y="1" width="12" height="14" fill="#ffff00"/>
-        <rect x="6" y="3" width="4" height="1" fill="#000000"/>
-        <rect x="5" y="4" width="2" height="1" fill="#000000"/>
-        <rect x="9" y="4" width="2" height="1" fill="#000000"/>
-        <rect x="9" y="5" width="2" height="2" fill="#000000"/>
-        <rect x="7" y="7" width="2" height="2" fill="#000000"/>
-        <rect x="7" y="10" width="2" height="2" fill="#000000"/>
-      </svg>
-    ),
-    paint: (
-      <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
-        <rect x="1" y="1" width="14" height="14" fill="#ffffff"/>
-        <rect x="2" y="2" width="12" height="12" fill="#c0c0c0"/>
-        <rect x="3" y="3" width="10" height="10" fill="#ffffff"/>
-        {/* Paint palette */}
-        <rect x="4" y="5" width="2" height="2" fill="#ff0000"/>
-        <rect x="6" y="5" width="2" height="2" fill="#00ff00"/>
-        <rect x="8" y="5" width="2" height="2" fill="#0000ff"/>
-        <rect x="4" y="7" width="2" height="2" fill="#ffff00"/>
-        <rect x="6" y="7" width="2" height="2" fill="#ff00ff"/>
-        <rect x="8" y="7" width="2" height="2" fill="#00ffff"/>
-        {/* Brush */}
-        <rect x="10" y="9" width="1" height="3" fill="#804000"/>
-        <rect x="10" y="8" width="2" height="2" fill="#c0c0c0"/>
-      </svg>
-    ),
-    media: (
-      <svg viewBox="0 0 16 16" width={size} height={size} style={{ imageRendering: 'pixelated' }}>
-        <rect x="1" y="2" width="14" height="12" fill="#000080"/>
-        <rect x="2" y="3" width="12" height="10" fill="#000000"/>
-        {/* Play button triangle */}
-        <polygon points="6,5 6,11 11,8" fill="#00ff00"/>
-        {/* Speaker lines */}
-        <rect x="12" y="5" width="1" height="1" fill="#ffff00"/>
-        <rect x="13" y="6" width="1" height="1" fill="#ffff00"/>
-        <rect x="12" y="7" width="1" height="1" fill="#ffff00"/>
-        <rect x="13" y="8" width="1" height="1" fill="#ffff00"/>
-        <rect x="12" y="9" width="1" height="1" fill="#ffff00"/>
-      </svg>
-    ),
+    computer: <img src="/icons/w95-computer.ico" width={size} height={size} alt="Computer" style={iconStyle} />,
+    folder: <img src="/icons/w95-folder.ico" width={size} height={size} alt="Folder" style={iconStyle} />,
+    notepad: <img src="/icons/w95-notepad.ico" width={size} height={size} alt="Notepad" style={iconStyle} />,
+    mail: <img src="/icons/w95-mail.ico" width={size} height={size} alt="Mail" style={iconStyle} />,
+    terminal: <img src="/icons/w95-terminal.ico" width={size} height={size} alt="Terminal" style={iconStyle} />,
+    user: <img src="/icons/w95-user.ico" width={size} height={size} alt="User" style={iconStyle} />,
+    recycle: <img src="/icons/w95-recycle.ico" width={size} height={size} alt="Recycle Bin" style={iconStyle} />,
+    minesweeper: <img src="/icons/w95-minesweeper.ico" width={size} height={size} alt="Minesweeper" style={iconStyle} />,
+    help: <img src="/icons/w95-help.ico" width={size} height={size} alt="Help" style={iconStyle} />,
+    paint: <img src="/icons/w95-paint.ico" width={size} height={size} alt="Paint" style={iconStyle} />,
+    media: <img src="/icons/w95-media.ico" width={size} height={size} alt="Media Player" style={iconStyle} />,
   };
   return icons[type] || icons.folder;
 };
 
-// Windows XP Style Icons - Gradient-based, polished look
+// Windows XP Style Icons - Using authentic Windows XP .ico files
 const XPIcon = ({ type, size = 32 }) => {
   const icons = {
-    computer: (
-      <svg viewBox="0 0 32 32" width={size} height={size}>
-        <defs>
-          <linearGradient id="monitor-body" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#E8E8E8"/>
-            <stop offset="50%" stopColor="#D4D4D4"/>
-            <stop offset="100%" stopColor="#B8B8B8"/>
-          </linearGradient>
-          <linearGradient id="monitor-screen" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#1E5799"/>
-            <stop offset="100%" stopColor="#7DB9E8"/>
-          </linearGradient>
-        </defs>
-        <rect x="4" y="4" width="24" height="18" rx="2" fill="url(#monitor-body)" stroke="#666" strokeWidth="1"/>
-        <rect x="6" y="6" width="20" height="14" rx="1" fill="url(#monitor-screen)"/>
-        <rect x="12" y="22" width="8" height="2" fill="#B8B8B8"/>
-        <rect x="8" y="24" width="16" height="3" rx="1" fill="url(#monitor-body)" stroke="#666" strokeWidth="0.5"/>
-      </svg>
-    ),
-    folder: (
-      <svg viewBox="0 0 32 32" width={size} height={size}>
-        <defs>
-          <linearGradient id="folder-back" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FFF1A8"/>
-            <stop offset="100%" stopColor="#E6B800"/>
-          </linearGradient>
-          <linearGradient id="folder-front" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FFEB3B"/>
-            <stop offset="50%" stopColor="#FDD835"/>
-            <stop offset="100%" stopColor="#F9A825"/>
-          </linearGradient>
-        </defs>
-        <path d="M2 8 L2 26 Q2 28 4 28 L28 28 Q30 28 30 26 L30 12 Q30 10 28 10 L14 10 L12 6 L4 6 Q2 6 2 8" fill="url(#folder-back)"/>
-        <path d="M2 12 L2 26 Q2 28 4 28 L28 28 Q30 28 30 26 L30 12 Q30 10 28 10 L4 10 Q2 10 2 12" fill="url(#folder-front)"/>
-      </svg>
-    ),
-    notepad: (
-      <svg viewBox="0 0 32 32" width={size} height={size}>
-        <defs>
-          <linearGradient id="notepad-paper" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FFFFFF"/>
-            <stop offset="100%" stopColor="#F5F5F5"/>
-          </linearGradient>
-          <linearGradient id="notepad-binding" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#1565C0"/>
-            <stop offset="50%" stopColor="#1E88E5"/>
-            <stop offset="100%" stopColor="#1565C0"/>
-          </linearGradient>
-        </defs>
-        <rect x="6" y="2" width="20" height="28" rx="1" fill="url(#notepad-paper)" stroke="#CCC" strokeWidth="1"/>
-        <rect x="6" y="2" width="20" height="4" fill="url(#notepad-binding)"/>
-        <line x1="10" y1="10" x2="22" y2="10" stroke="#DDD" strokeWidth="1"/>
-        <line x1="10" y1="14" x2="22" y2="14" stroke="#DDD" strokeWidth="1"/>
-        <line x1="10" y1="18" x2="22" y2="18" stroke="#DDD" strokeWidth="1"/>
-        <line x1="10" y1="22" x2="18" y2="22" stroke="#DDD" strokeWidth="1"/>
-      </svg>
-    ),
-    mail: (
-      <svg viewBox="0 0 32 32" width={size} height={size}>
-        <defs>
-          <linearGradient id="envelope-body" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FFF8E1"/>
-            <stop offset="100%" stopColor="#FFE082"/>
-          </linearGradient>
-          <linearGradient id="envelope-flap" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FFECB3"/>
-            <stop offset="100%" stopColor="#FFD54F"/>
-          </linearGradient>
-        </defs>
-        <rect x="2" y="8" width="28" height="18" rx="2" fill="url(#envelope-body)" stroke="#D4A000" strokeWidth="1"/>
-        <path d="M2 10 L16 18 L30 10" stroke="#D4A000" strokeWidth="1.5" fill="none"/>
-        <path d="M2 8 L16 16 L30 8" fill="url(#envelope-flap)" stroke="#D4A000" strokeWidth="1"/>
-      </svg>
-    ),
-    terminal: (
-      <svg viewBox="0 0 32 32" width={size} height={size}>
-        <defs>
-          <linearGradient id="terminal-frame" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#505050"/>
-            <stop offset="100%" stopColor="#303030"/>
-          </linearGradient>
-        </defs>
-        <rect x="2" y="4" width="28" height="24" rx="2" fill="url(#terminal-frame)"/>
-        <rect x="4" y="6" width="24" height="20" fill="#000000"/>
-        <text x="6" y="14" fill="#C0C0C0" fontSize="6" fontFamily="monospace">C:\&gt;</text>
-        <text x="6" y="22" fill="#00FF00" fontSize="6" fontFamily="monospace">_</text>
-      </svg>
-    ),
-    user: (
-      <svg viewBox="0 0 32 32" width={size} height={size}>
-        <defs>
-          <linearGradient id="user-head" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FFE0BD"/>
-            <stop offset="100%" stopColor="#FFCBA4"/>
-          </linearGradient>
-          <linearGradient id="user-body" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#42A5F5"/>
-            <stop offset="100%" stopColor="#1565C0"/>
-          </linearGradient>
-        </defs>
-        <ellipse cx="16" cy="10" rx="7" ry="8" fill="url(#user-head)" stroke="#D4A574" strokeWidth="1"/>
-        <path d="M6 30 Q6 20 16 18 Q26 20 26 30" fill="url(#user-body)"/>
-        <circle cx="13" cy="9" r="1" fill="#333"/>
-        <circle cx="19" cy="9" r="1" fill="#333"/>
-        <path d="M13 13 Q16 15 19 13" stroke="#C08060" strokeWidth="1" fill="none"/>
-      </svg>
-    ),
-    recycle: (
-      <svg viewBox="0 0 32 32" width={size} height={size}>
-        <defs>
-          <linearGradient id="recycle-bin" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#E0E0E0"/>
-            <stop offset="100%" stopColor="#9E9E9E"/>
-          </linearGradient>
-        </defs>
-        <path d="M8 8 L6 28 Q6 30 8 30 L24 30 Q26 30 26 28 L24 8" fill="url(#recycle-bin)" stroke="#666" strokeWidth="1"/>
-        <rect x="5" y="5" width="22" height="4" rx="1" fill="url(#recycle-bin)" stroke="#666" strokeWidth="1"/>
-        <rect x="12" y="3" width="8" height="3" rx="1" fill="#BDBDBD" stroke="#666" strokeWidth="0.5"/>
-        <line x1="11" y1="12" x2="10" y2="26" stroke="#757575" strokeWidth="1.5"/>
-        <line x1="16" y1="12" x2="16" y2="26" stroke="#757575" strokeWidth="1.5"/>
-        <line x1="21" y1="12" x2="22" y2="26" stroke="#757575" strokeWidth="1.5"/>
-      </svg>
-    ),
-    minesweeper: (
-      <svg viewBox="0 0 32 32" width={size} height={size}>
-        <defs>
-          <linearGradient id="mine-body" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#424242"/>
-            <stop offset="50%" stopColor="#212121"/>
-            <stop offset="100%" stopColor="#000000"/>
-          </linearGradient>
-          <radialGradient id="mine-highlight" cx="30%" cy="30%">
-            <stop offset="0%" stopColor="#666"/>
-            <stop offset="100%" stopColor="#000"/>
-          </radialGradient>
-        </defs>
-        <rect x="2" y="2" width="28" height="28" rx="2" fill="#BDBDBD" stroke="#888" strokeWidth="1"/>
-        <circle cx="16" cy="16" r="8" fill="url(#mine-highlight)"/>
-        <line x1="16" y1="4" x2="16" y2="10" stroke="#000" strokeWidth="2"/>
-        <line x1="16" y1="22" x2="16" y2="28" stroke="#000" strokeWidth="2"/>
-        <line x1="4" y1="16" x2="10" y2="16" stroke="#000" strokeWidth="2"/>
-        <line x1="22" y1="16" x2="28" y2="16" stroke="#000" strokeWidth="2"/>
-        <line x1="8" y1="8" x2="12" y2="12" stroke="#000" strokeWidth="2"/>
-        <line x1="20" y1="20" x2="24" y2="24" stroke="#000" strokeWidth="2"/>
-        <line x1="24" y1="8" x2="20" y2="12" stroke="#000" strokeWidth="2"/>
-        <line x1="12" y1="20" x2="8" y2="24" stroke="#000" strokeWidth="2"/>
-        <circle cx="13" cy="13" r="2" fill="#FFF" opacity="0.6"/>
-      </svg>
-    ),
-    help: (
-      <svg viewBox="0 0 32 32" width={size} height={size}>
-        <defs>
-          <linearGradient id="help-bg" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FFEE58"/>
-            <stop offset="100%" stopColor="#FDD835"/>
-          </linearGradient>
-        </defs>
-        <rect x="4" y="2" width="24" height="28" rx="2" fill="url(#help-bg)" stroke="#F9A825" strokeWidth="1"/>
-        <text x="16" y="22" textAnchor="middle" fill="#1565C0" fontSize="18" fontWeight="bold" fontFamily="serif">?</text>
-      </svg>
-    ),
-    paint: (
-      <svg viewBox="0 0 32 32" width={size} height={size}>
-        <defs>
-          <linearGradient id="paint-palette" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FFECB3"/>
-            <stop offset="100%" stopColor="#D7CCC8"/>
-          </linearGradient>
-        </defs>
-        <ellipse cx="16" cy="18" rx="13" ry="11" fill="url(#paint-palette)" stroke="#8D6E63" strokeWidth="1"/>
-        <ellipse cx="10" cy="12" rx="2.5" ry="2" fill="#F44336"/>
-        <ellipse cx="18" cy="10" rx="2.5" ry="2" fill="#2196F3"/>
-        <ellipse cx="24" cy="14" rx="2.5" ry="2" fill="#4CAF50"/>
-        <ellipse cx="22" cy="22" rx="2.5" ry="2" fill="#FFEB3B"/>
-        <ellipse cx="12" cy="22" rx="2.5" ry="2" fill="#9C27B0"/>
-        <ellipse cx="8" cy="17" rx="3" ry="2.5" fill="#FAFAFA" stroke="#CCC" strokeWidth="0.5"/>
-      </svg>
-    ),
-    media: (
-      <svg viewBox="0 0 32 32" width={size} height={size}>
-        <defs>
-          <linearGradient id="media-body" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#303F9F"/>
-            <stop offset="100%" stopColor="#1A237E"/>
-          </linearGradient>
-          <linearGradient id="media-screen" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#1B1B1B"/>
-            <stop offset="100%" stopColor="#000000"/>
-          </linearGradient>
-          <linearGradient id="play-btn" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#4CAF50"/>
-            <stop offset="100%" stopColor="#2E7D32"/>
-          </linearGradient>
-        </defs>
-        <rect x="2" y="4" width="28" height="24" rx="2" fill="url(#media-body)"/>
-        <rect x="4" y="6" width="24" height="16" rx="1" fill="url(#media-screen)"/>
-        <polygon points="14,10 14,18 20,14" fill="url(#play-btn)"/>
-        <rect x="4" y="24" width="24" height="2" rx="1" fill="#5C6BC0"/>
-        <circle cx="8" cy="25" r="1" fill="#FFF"/>
-        <rect x="12" y="24.5" width="12" height="1" fill="#7986CB" rx="0.5"/>
-      </svg>
-    ),
+    computer: <img src="/icons/wxp-computer.ico" width={size} height={size} alt="Computer" />,
+    folder: <img src="/icons/wxp-folder.ico" width={size} height={size} alt="Folder" />,
+    notepad: <img src="/icons/wxp-notepad.ico" width={size} height={size} alt="Notepad" />,
+    mail: <img src="/icons/wxp-mail.ico" width={size} height={size} alt="Mail" />,
+    terminal: <img src="/icons/wxp-terminal.png" width={size} height={size} alt="Terminal" />,
+    user: <img src="/icons/wxp-user.ico" width={size} height={size} alt="User" />,
+    recycle: <img src="/icons/wxp-recycle.ico" width={size} height={size} alt="Recycle Bin" />,
+    minesweeper: <img src="/icons/wxp-minesweeper.png" width={size} height={size} alt="Minesweeper" />,
+    help: <img src="/icons/wxp-help.ico" width={size} height={size} alt="Help" />,
+    paint: <img src="/icons/wxp-paint.ico" width={size} height={size} alt="Paint" />,
+    media: <img src="/icons/wxp-media.ico" width={size} height={size} alt="Media Player" />,
   };
   return icons[type] || icons.folder;
 };
@@ -625,7 +368,7 @@ const BootScreen = ({ onComplete }) => {
   }, [stage]);
 
   return (
-    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-[9999]">
+    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-9999">
       {stage >= 0 && (
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -724,7 +467,7 @@ const Clippy = ({ onClose }) => {
 
   return (
     <div 
-      className="fixed z-[100] flex flex-col items-end gap-2"
+      className="fixed z-100 flex flex-col items-end gap-2"
       style={{ 
         left: position.x, 
         top: position.y,
@@ -793,13 +536,37 @@ const Clippy = ({ onClose }) => {
 };
 
 // Minesweeper
-const Minesweeper = ({ currentOS = 'win95' }) => {
-  const [grid, setGrid] = useState([]);
+const Minesweeper = ({ currentOS = 'win95', onResize }: { currentOS?: string, onResize?: (width: number, height: number) => void }) => {
+  const [grid, setGrid] = useState<Array<Array<{isMine: boolean, isRevealed: boolean, isFlagged: boolean, neighborMines: number}>>>([]);
   const [gameState, setGameState] = useState('playing');
   const [flagCount, setFlagCount] = useState(0);
-  const ROWS = 8;
-  const COLS = 8;
-  const MINES = 10;
+  const [difficulty, setDifficulty] = useState('beginner');
+  const [showGameMenu, setShowGameMenu] = useState(false);
+  const [showHelpMenu, setShowHelpMenu] = useState(false);
+  const [settings, setSettings] = useState({ marks: true, color: true, sound: true });
+  
+  // Difficulty settings - authentic XP sizes
+  const difficulties = {
+    beginner: { rows: 9, cols: 9, mines: 10 },
+    intermediate: { rows: 16, cols: 16, mines: 40 },
+    expert: { rows: 16, cols: 30, mines: 99 },
+  };
+  
+  const { rows: ROWS, cols: COLS, mines: MINES } = difficulties[difficulty];
+  const CELL_SIZE = 16; // Authentic XP cell size
+  
+  // Calculate window size based on grid dimensions
+  // Width: grid + borders (6px) + padding (8px)
+  // Height: title bar (26px) + menu bar (20px) + control panel (42px) + grid + borders + padding
+  useEffect(() => {
+    if (onResize) {
+      const gridWidth = COLS * CELL_SIZE;
+      const gridHeight = ROWS * CELL_SIZE;
+      const windowWidth = gridWidth + 22;
+      const windowHeight = gridHeight + 120;
+      onResize(windowWidth, windowHeight);
+    }
+  }, [difficulty, COLS, ROWS, onResize]);
 
   // OS-specific styling
   const isXP = currentOS === 'winxp';
@@ -848,7 +615,7 @@ const Minesweeper = ({ currentOS = 'win95' }) => {
     setGrid(newGrid);
     setGameState('playing');
     setFlagCount(0);
-  }, []);
+  }, [ROWS, COLS, MINES]);
 
   useEffect(() => { initGame(); }, [initGame]);
 
@@ -913,77 +680,278 @@ const Minesweeper = ({ currentOS = 'win95' }) => {
 
   const faceEmoji = gameState === 'won' ? '😎' : gameState === 'lost' ? '😵' : '🙂';
 
-  // XP-specific cell styling
+  // XP-specific cell styling - matches authentic XP Minesweeper exactly
   const getCellStyle = (cell) => {
     if (cell.isRevealed) {
-      return isXP 
-        ? { backgroundColor: '#D4D0C8', border: '1px solid #808080' }
-        : { backgroundColor: '#c0c0c0', border: '1px solid #808080' };
+      // Revealed cells are flat with single pixel border creating grid lines
+      return { 
+        backgroundColor: '#C0C0C0', 
+        borderRight: '1px solid #808080',
+        borderBottom: '1px solid #808080',
+        borderTop: 'none',
+        borderLeft: 'none',
+      };
     }
-    return isXP 
-      ? { backgroundColor: bgColor, ...raisedXP, borderRadius: '2px' }
-      : { backgroundColor: colors.gray, ...raised };
+    // Unrevealed cells have raised 3D look - white/light on top-left, dark on bottom-right
+    return { 
+      backgroundColor: '#C0C0C0',
+      borderTop: '2px solid #ffffff',
+      borderLeft: '2px solid #ffffff', 
+      borderBottom: '2px solid #808080',
+      borderRight: '2px solid #808080',
+    };
   };
 
+  // LED Display component for mine counter and timer
+  const LEDDisplay = ({ value }: { value: number }) => (
+    <div 
+      style={{ 
+        backgroundColor: '#300', 
+        padding: '2px 4px',
+        border: '1px solid #000',
+        borderRadius: isXP ? '2px' : '0',
+        boxShadow: 'inset 1px 1px 2px rgba(0,0,0,0.8)',
+      }}
+    >
+      <span style={{
+        fontFamily: '"Digital-7", "Courier New", monospace',
+        fontSize: '20px',
+        fontWeight: 'bold',
+        color: '#f00',
+        textShadow: '0 0 4px #f00',
+        letterSpacing: '2px',
+      }}>
+        {String(Math.max(0, Math.min(999, value))).padStart(3, '0')}
+      </span>
+    </div>
+  );
+
+  const handleDifficultyChange = (newDifficulty) => {
+    setDifficulty(newDifficulty);
+    setShowGameMenu(false);
+  };
+
+  const toggleSetting = (setting) => {
+    setSettings(prev => ({ ...prev, [setting]: !prev[setting] }));
+  };
+
+  const closeMenus = () => {
+    setShowGameMenu(false);
+    setShowHelpMenu(false);
+  };
+
+  // Calculate grid dimensions
+  const gridWidth = COLS * CELL_SIZE;
+  const gridHeight = ROWS * CELL_SIZE;
+
   return (
-    <div className="p-2 select-none" style={{ fontFamily, fontSize: '12px' }}>
-      <div 
-        className={`flex items-center justify-between p-1 mb-2 ${isXP ? 'rounded' : ''}`} 
-        style={{ ...borderStyle, backgroundColor: bgColor }}
-      >
-        <div 
-          className="w-10 h-6 flex items-center justify-center text-red-600 font-bold" 
+    <div 
+      className="select-none" 
+      style={{ 
+        fontFamily, 
+        fontSize: '12px', 
+        backgroundColor: '#C0C0C0',
+      }}
+      onClick={(e) => {
+        // Close menus when clicking outside
+        if (!(e.target as HTMLElement).closest('.menu-item')) {
+          closeMenus();
+        }
+      }}
+    >
+      {/* Menu bar - fixed at top, never scrolls */}
+      <div style={{ 
+        backgroundColor: '#ECE9D8',
+        borderBottom: '1px solid #808080',
+        position: 'relative',
+      }}>
+        <span 
+          className="menu-item"
           style={{ 
-            backgroundColor: '#000', 
-            fontFamily: 'monospace',
-            borderRadius: isXP ? '2px' : '0',
+            padding: '2px 8px', 
+            cursor: 'pointer',
+            backgroundColor: showGameMenu ? '#316AC5' : 'transparent',
+            color: showGameMenu ? '#fff' : '#000',
+            display: 'inline-block',
           }}
+          onClick={(e) => { e.stopPropagation(); setShowGameMenu(!showGameMenu); setShowHelpMenu(false); }}
         >
-          {String(MINES - flagCount).padStart(3, '0')}
-        </div>
-        <button 
-          onClick={initGame} 
-          className={`w-7 h-7 flex items-center justify-center text-lg ${isXP ? 'rounded' : ''}`} 
-          style={{ backgroundColor: bgColor, ...buttonBorder }}
-        >
-          {faceEmoji}
-        </button>
-        <div 
-          className="w-10 h-6 flex items-center justify-center text-red-600 font-bold" 
+          Game
+        </span>
+        <span 
+          className="menu-item"
           style={{ 
-            backgroundColor: '#000', 
-            fontFamily: 'monospace',
-            borderRadius: isXP ? '2px' : '0',
+            padding: '2px 8px', 
+            cursor: 'pointer',
+            backgroundColor: showHelpMenu ? '#316AC5' : 'transparent',
+            color: showHelpMenu ? '#fff' : '#000',
+            display: 'inline-block',
           }}
+          onClick={(e) => { e.stopPropagation(); setShowHelpMenu(!showHelpMenu); setShowGameMenu(false); }}
         >
-          000
-        </div>
+          Help
+        </span>
+        
+        {/* Game dropdown menu */}
+        {showGameMenu && (
+          <div 
+            className="menu-item"
+            style={{
+              position: 'absolute',
+              top: '100%',
+              left: '0',
+              backgroundColor: '#fff',
+              border: '1px solid #808080',
+              boxShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+              zIndex: 1000,
+              minWidth: '160px',
+            }}
+          >
+            <div 
+              className="px-6 py-1 hover:bg-[#316AC5] hover:text-white cursor-pointer flex justify-between"
+              onClick={() => { initGame(); closeMenus(); }}
+            >
+              <span>New</span>
+              <span style={{ color: '#808080' }}>F2</span>
+            </div>
+            <div style={{ borderTop: '1px solid #C0C0C0', margin: '2px 2px' }} />
+            <div 
+              className="px-6 py-1 hover:bg-[#316AC5] hover:text-white cursor-pointer"
+              onClick={() => handleDifficultyChange('beginner')}
+            >
+              {difficulty === 'beginner' ? '✓ ' : '   '}Beginner
+            </div>
+            <div 
+              className="px-6 py-1 hover:bg-[#316AC5] hover:text-white cursor-pointer"
+              onClick={() => handleDifficultyChange('intermediate')}
+            >
+              {difficulty === 'intermediate' ? '✓ ' : '   '}Intermediate
+            </div>
+            <div 
+              className="px-6 py-1 hover:bg-[#316AC5] hover:text-white cursor-pointer"
+              onClick={() => handleDifficultyChange('expert')}
+            >
+              {difficulty === 'expert' ? '✓ ' : '   '}Expert
+            </div>
+            <div className="px-6 py-1 text-gray-400 cursor-default">
+              {'   '}Custom...
+            </div>
+            <div style={{ borderTop: '1px solid #C0C0C0', margin: '2px 2px' }} />
+            <div 
+              className="px-6 py-1 hover:bg-[#316AC5] hover:text-white cursor-pointer"
+              onClick={() => toggleSetting('marks')}
+            >
+              {settings.marks ? '✓ ' : '   '}Marks (?)
+            </div>
+            <div 
+              className="px-6 py-1 hover:bg-[#316AC5] hover:text-white cursor-pointer"
+              onClick={() => toggleSetting('color')}
+            >
+              {settings.color ? '✓ ' : '   '}Color
+            </div>
+            <div 
+              className="px-6 py-1 hover:bg-[#316AC5] hover:text-white cursor-pointer"
+              onClick={() => toggleSetting('sound')}
+            >
+              {settings.sound ? '✓ ' : '   '}Sound
+            </div>
+            <div style={{ borderTop: '1px solid #C0C0C0', margin: '2px 2px' }} />
+            <div className="px-6 py-1 hover:bg-[#316AC5] hover:text-white cursor-pointer">
+              {'   '}Best Times...
+            </div>
+            <div style={{ borderTop: '1px solid #C0C0C0', margin: '2px 2px' }} />
+            <div className="px-6 py-1 hover:bg-[#316AC5] hover:text-white cursor-pointer">
+              {'   '}Exit
+            </div>
+          </div>
+        )}
       </div>
       
-      <div className={`inline-block ${isXP ? 'rounded' : ''}`} style={{ ...borderStyle }}>
-        {grid.map((row, r) => (
-          <div key={r} className="flex">
-            {row.map((cell, c) => (
-              <button
-                key={c}
-                onClick={() => revealCell(r, c)}
-                onContextMenu={(e) => toggleFlag(e, r, c)}
-                className="w-5 h-5 flex items-center justify-center text-xs font-bold"
-                style={{
-                  ...getCellStyle(cell),
-                  color: getNumberColor(cell.neighborMines),
-                  fontSize: '11px',
-                }}
-              >
-                {getCellContent(cell)}
-              </button>
-            ))}
-          </div>
-        ))}
+      {/* Main game area with padding */}
+      <div style={{ padding: '4px' }}>
+        {/* Control panel - sunken border */}
+        <div 
+          className="flex items-center justify-between"
+          style={{ 
+            padding: '4px 5px',
+            marginBottom: '4px',
+            borderTop: '2px solid #808080',
+            borderLeft: '2px solid #808080',
+            borderBottom: '2px solid #ffffff',
+            borderRight: '2px solid #ffffff',
+            backgroundColor: '#C0C0C0',
+          }}
+        >
+          <LEDDisplay value={MINES - flagCount} />
+          <button 
+            onClick={initGame} 
+            className="flex items-center justify-center"
+            style={{ 
+              width: '26px',
+              height: '26px',
+              backgroundColor: '#C0C0C0',
+              borderTop: '2px solid #ffffff',
+              borderLeft: '2px solid #ffffff',
+              borderBottom: '2px solid #808080',
+              borderRight: '2px solid #808080',
+              fontSize: '16px',
+              cursor: 'pointer',
+            }}
+          >
+            {faceEmoji}
+          </button>
+          <LEDDisplay value={0} />
+        </div>
+        
+        {/* Game grid - sunken border */}
+        <div 
+          style={{ 
+            borderTop: '3px solid #808080',
+            borderLeft: '3px solid #808080',
+            borderBottom: '3px solid #ffffff',
+            borderRight: '3px solid #ffffff',
+            lineHeight: 0,
+          }}
+        >
+          {grid.map((row, r) => (
+            <div key={r} style={{ display: 'flex' }}>
+              {row.map((cell, c) => (
+                <button
+                  key={c}
+                  onClick={() => revealCell(r, c)}
+                  onContextMenu={(e) => toggleFlag(e, r, c)}
+                  style={{
+                    width: `${CELL_SIZE}px`,
+                    height: `${CELL_SIZE}px`,
+                    ...getCellStyle(cell),
+                    color: getNumberColor(cell.neighborMines),
+                    boxSizing: 'border-box',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    padding: 0,
+                    margin: 0,
+                    cursor: 'default',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: 'Arial, sans-serif',
+                  }}
+                >
+                  {getCellContent(cell)}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
       
       {gameState !== 'playing' && (
-        <div className="mt-2 text-center text-sm font-bold">
+        <div style={{ 
+          padding: '4px', 
+          textAlign: 'center', 
+          fontWeight: 'bold',
+          backgroundColor: '#C0C0C0',
+        }}>
           {gameState === 'won' ? '🎉 You Win!' : '💥 Game Over!'}
         </div>
       )}
@@ -1016,7 +984,7 @@ const Button95 = ({ children, onClick, active, style, className = '' }) => {
 };
 
 // Resizable Window
-const Window95 = ({ id, title, icon, children, position, size, zIndex, isMinimized, isMaximized, onClose, onMinimize, onMaximize, onFocus, onDrag, onResize, hideMenuBar, minWidth = 200, minHeight = 150, allWindows, isMobile, isTouch }) => {
+const Window95 = ({ id, title, icon, children, position, size, zIndex, isMinimized, isMaximized, onClose, onMinimize, onMaximize, onFocus, onDrag, onResize, hideMenuBar, noScroll, noStatusBar, minWidth = 200, minHeight = 150, allWindows, isMobile, isTouch }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [resizeDirection, setResizeDirection] = useState(null);
@@ -1280,11 +1248,12 @@ const Window95 = ({ id, title, icon, children, position, size, zIndex, isMinimiz
       )}
       
       {/* Content */}
-      <div className="flex-1 overflow-auto m-0.5" style={{ ...inset, backgroundColor: colors.white, color: colors.black }}>
+      <div className={`flex-1 ${noScroll ? 'overflow-hidden' : 'overflow-auto'} ${noScroll ? '' : 'm-0.5'}`} style={{ ...(noScroll ? {} : inset), backgroundColor: noScroll ? 'transparent' : colors.white, color: colors.black }}>
         {children}
       </div>
       
       {/* Status bar with resize grip */}
+      {!noStatusBar && (
       <div className={`${isMobile ? 'h-8' : 'h-6'} flex items-center px-1 ${isMobile ? 'text-sm' : 'text-xs'} shrink-0`} style={{ fontFamily: '"MS Sans Serif", Tahoma, sans-serif', color: colors.black }}>
         <div className="flex-1 px-2 h-4 flex items-center" style={inset}>Ready</div>
         {!effectivelyMaximized && !isMobile && (
@@ -1309,12 +1278,13 @@ const Window95 = ({ id, title, icon, children, position, size, zIndex, isMinimiz
           </div>
         )}
       </div>
+      )}
     </div>
   );
 };
 
 // Windows XP Window
-const WindowXP = ({ id, title, icon, children, position, size, zIndex, isMinimized, isMaximized, onClose, onMinimize, onMaximize, onFocus, onDrag, onResize, hideMenuBar, minWidth = 200, minHeight = 150, allWindows, isMobile, isTouch }) => {
+const WindowXP = ({ id, title, icon, children, position, size, zIndex, isMinimized, isMaximized, onClose, onMinimize, onMaximize, onFocus, onDrag, onResize, hideMenuBar, noScroll, noStatusBar, minWidth = 200, minHeight = 150, allWindows, isMobile, isTouch }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [resizeDirection, setResizeDirection] = useState(null);
@@ -1526,11 +1496,12 @@ const WindowXP = ({ id, title, icon, children, position, size, zIndex, isMinimiz
       )}
       
       {/* Content */}
-      <div className="flex-1 overflow-auto" style={{ backgroundColor: colorsXP.white, color: colorsXP.black, border: '1px solid #ACA899', margin: '2px' }}>
+      <div className={`flex-1 ${noScroll ? 'overflow-hidden' : 'overflow-auto'}`} style={{ backgroundColor: noScroll ? 'transparent' : colorsXP.white, color: colorsXP.black, border: noScroll ? 'none' : '1px solid #ACA899', margin: noScroll ? '0' : '2px' }}>
         {children}
       </div>
       
       {/* Status bar */}
+      {!noStatusBar && (
       <div className={`${isMobile ? 'h-7' : 'h-5'} flex items-center px-1 ${isMobile ? 'text-sm' : 'text-xs'} shrink-0`} style={{ fontFamily: 'Tahoma, sans-serif', color: colorsXP.black, backgroundColor: colorsXP.windowBg }}>
         <div className="flex-1 px-2 h-4 flex items-center rounded" style={{ ...insetXP, backgroundColor: '#F1EFE2' }}>Ready</div>
         {!effectivelyMaximized && !isMobile && (
@@ -1549,6 +1520,7 @@ const WindowXP = ({ id, title, icon, children, position, size, zIndex, isMinimiz
           </div>
         )}
       </div>
+      )}
     </div>
   );
 };
@@ -1624,6 +1596,162 @@ const DesktopIconXP = ({ icon, label, onClick, isSelected, onSelect, isMobile })
         {label}
       </span>
     </button>
+  );
+};
+
+// Draggable wrapper for desktop icons
+const DraggableDesktopIcon = ({ 
+  iconId,
+  position, 
+  gridSize, 
+  onDragEnd, 
+  children, 
+  isMobile,
+  cellToPixels,
+  pixelsToCell,
+  isCellOccupied,
+}: {
+  iconId: string;
+  position: { col: number; row: number };
+  gridSize: { cols: number; rows: number };
+  onDragEnd: (newPos: { col: number; row: number }) => void;
+  children: React.ReactNode;
+  isMobile: boolean;
+  cellToPixels: (col: number, row: number) => { x: number; y: number };
+  pixelsToCell: (x: number, y: number) => { col: number; row: number };
+  isCellOccupied: (col: number, row: number, excludeId: string) => boolean;
+}) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
+  const dragStartRef = useRef({ x: 0, y: 0, startX: 0, startY: 0 });
+  const hasDraggedRef = useRef(false);
+
+  // Convert grid position to pixels
+  const pixelPos = cellToPixels(position.col, position.row);
+
+  const handleDragStart = (clientX: number, clientY: number) => {
+    dragStartRef.current = {
+      x: clientX,
+      y: clientY,
+      startX: pixelPos.x,
+      startY: pixelPos.y,
+    };
+    setDragPos({ x: pixelPos.x, y: pixelPos.y });
+    setIsDragging(true);
+    hasDraggedRef.current = false;
+  };
+
+  const handleDragMove = (clientX: number, clientY: number) => {
+    if (!isDragging) return;
+    
+    const deltaX = clientX - dragStartRef.current.x;
+    const deltaY = clientY - dragStartRef.current.y;
+    
+    // Mark as dragged if moved more than 5 pixels
+    if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+      hasDraggedRef.current = true;
+    }
+    
+    setDragPos({
+      x: dragStartRef.current.startX + deltaX,
+      y: dragStartRef.current.startY + deltaY,
+    });
+  };
+
+  const handleDragEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    // Only process position change if actually dragged
+    if (!hasDraggedRef.current) return;
+
+    // Calculate target cell from current drag position
+    const targetCell = pixelsToCell(
+      dragPos.x + DESKTOP_GRID.cellWidth / 2,
+      dragPos.y + DESKTOP_GRID.cellHeight / 2
+    );
+
+    // Clamp to grid bounds
+    const clampedCol = Math.max(0, Math.min(gridSize.cols - 1, targetCell.col));
+    const clampedRow = Math.max(0, Math.min(gridSize.rows - 1, targetCell.row));
+
+    // Check if cell is occupied
+    if (!isCellOccupied(clampedCol, clampedRow, iconId)) {
+      onDragEnd({ col: clampedCol, row: clampedRow });
+    }
+    // If occupied, icon snaps back to original position (no action needed)
+  };
+
+  // Mouse events
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return; // Only left click
+    e.preventDefault();
+    handleDragStart(e.clientX, e.clientY);
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      handleDragMove(e.clientX, e.clientY);
+    };
+
+    const handleMouseUp = () => {
+      handleDragEnd();
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragPos]);
+
+  // Touch events
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    handleDragStart(touch.clientX, touch.clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    handleDragMove(touch.clientX, touch.clientY);
+  };
+
+  const handleTouchEnd = () => {
+    handleDragEnd();
+  };
+
+  const currentPos = isDragging ? dragPos : pixelPos;
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: currentPos.x,
+        top: currentPos.y,
+        width: DESKTOP_GRID.cellWidth,
+        height: DESKTOP_GRID.cellHeight,
+        cursor: isDragging ? 'grabbing' : 'grab',
+        zIndex: isDragging ? 1000 : 1,
+        opacity: isDragging ? 0.8 : 1,
+        transition: isDragging ? 'none' : 'left 0.15s ease-out, top 0.15s ease-out',
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        touchAction: 'none',
+      }}
+      onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {children}
+    </div>
   );
 };
 
@@ -2250,7 +2378,7 @@ const ContactContent = () => (
       <legend className="px-1">🔗 Contact Info</legend>
       <div className="space-y-0.5">
         <p>📧 <a href="mailto:ryanjherrin@gmail.com" className="text-[#0000ff] underline">ryanjherrin@gmail.com</a></p>
-        <p>📞 <span className="text-[#000]">(+1) 425 736 0144</span></p>
+        <p>📞 <span className="text-black">(+1) 425 736 0144</span></p>
         <p>💼 <a href="https://linkedin.com/in/ryanjherrin" target="_blank" rel="noopener noreferrer" className="text-[#0000ff] underline">linkedin.com/in/ryanjherrin</a></p>
         <p>🌐 <a href="https://ryanherrin.com" target="_blank" rel="noopener noreferrer" className="text-[#0000ff] underline">ryanherrin.com</a></p>
       </div>
@@ -3219,7 +3347,7 @@ const AlbumArt = ({
   skin: typeof MEDIA_PLAYER_SKINS[MediaPlayerSkin];
 }) => {
   return (
-    <div className="relative w-20 h-20 flex-shrink-0">
+    <div className="relative w-20 h-20 shrink-0">
       {/* Glow effect when playing */}
       <div 
         className="absolute -inset-1 rounded blur-md transition-opacity duration-300"
@@ -3700,10 +3828,11 @@ const MediaPlayerContent = ({ currentOS = 'win95' }) => {
   const displayIndex = currentIndex >= 0 ? currentIndex : 0;
   const albumArt = displayTrack ? getAlbumArt(displayTrack) : '';
 
-  // Classic skin colors based on OS
+  // Classic skin colors based on OS (XP styling applies to all skins)
   const classicBgColor = skin === 'classic' && isXP ? colorsXP.windowBg : '#c0c0c0';
-  const classicBorderColor = skin === 'classic' && isXP ? '#ACA899' : '#808080';
-  const classicBorderStyle = skin === 'classic' && isXP ? raisedXP : raised;
+  const classicBorderColor = isXP ? '#ACA899' : '#808080';
+  const xpBorderStyle = isXP ? raisedXP : raised;
+  const classicBorderStyle = skin === 'classic' || skin === 'silver' ? xpBorderStyle : {};
 
   // Button style based on skin
   const buttonStyle = {
@@ -3716,7 +3845,7 @@ const MediaPlayerContent = ({ currentOS = 'win95' }) => {
       ? 'inset 1px 1px 0 #4a4a4a, inset -1px -1px 0 #1a1a1a'
       : undefined,
     ...(skin !== 'winamp' && skin !== 'synthwave' ? classicBorderStyle : {}),
-    borderRadius: skin === 'classic' && isXP ? '3px' : undefined,
+    borderRadius: isXP ? '3px' : undefined,
   };
 
   return (
@@ -3760,7 +3889,7 @@ const MediaPlayerContent = ({ currentOS = 'win95' }) => {
           {/* Dropdown menu */}
           {showAlbumMenu && (
             <div 
-              className={`absolute top-full left-0 z-50 min-w-[180px] py-0.5 shadow-lg ${skin === 'classic' && isXP ? 'rounded' : ''}`}
+              className={`absolute top-full left-0 z-50 min-w-[180px] py-0.5 shadow-lg ${isXP ? 'rounded' : ''}`}
               style={{ 
                 backgroundColor: skin === 'winamp' ? '#2a2a2a' : (skin === 'synthwave' ? '#1a0a2e' : classicBgColor),
                 border: `1px solid ${classicBorderColor}`,
@@ -3819,7 +3948,7 @@ const MediaPlayerContent = ({ currentOS = 'win95' }) => {
           
           {/* Style dropdown on hover */}
           <div 
-            className={`absolute top-full left-0 z-50 min-w-[100px] py-0.5 shadow-lg hidden group-hover:block ${skin === 'classic' && isXP ? 'rounded' : ''}`}
+            className={`absolute top-full left-0 z-50 min-w-[100px] py-0.5 shadow-lg hidden group-hover:block ${isXP ? 'rounded' : ''}`}
             style={{ 
               backgroundColor: skin === 'winamp' ? '#2a2a2a' : (skin === 'synthwave' ? '#1a0a2e' : classicBgColor),
               border: `1px solid ${classicBorderColor}`,
@@ -3989,11 +4118,11 @@ const MediaPlayerContent = ({ currentOS = 'win95' }) => {
 
       {/* Playlist */}
       <div 
-        className={`flex-1 mx-2 mb-2 mt-1 overflow-auto ${skin === 'classic' && isXP ? 'rounded' : ''}`}
+        className={`flex-1 mx-2 mb-2 mt-1 overflow-auto ${isXP ? 'rounded' : ''}`}
         style={{ 
           backgroundColor: skin === 'winamp' ? '#0a0a0a' : (skin === 'synthwave' ? '#0d0620' : '#fff'),
           color: skin === 'winamp' || skin === 'synthwave' ? currentSkin.text : '#000',
-          border: skin === 'classic' && isXP ? `1px solid ${classicBorderColor}` : '2px inset #808080',
+          border: isXP ? `1px solid ${classicBorderColor}` : '2px inset #808080',
         }}
       >
         {/* Empty state for My Music */}
@@ -4035,7 +4164,7 @@ const MediaPlayerContent = ({ currentOS = 'win95' }) => {
             <img 
               src={getAlbumArt(track)}
               alt=""
-              className="w-5 h-5 object-cover rounded-sm flex-shrink-0"
+              className="w-5 h-5 object-cover rounded-sm shrink-0"
               style={{ 
                 border: `1px solid ${currentSkin.textSecondary}40`,
               }}
@@ -4046,7 +4175,7 @@ const MediaPlayerContent = ({ currentOS = 'win95' }) => {
             </span>
             <span className="truncate flex-1">{track.artist} - {track.title}</span>
             <span 
-              className="flex-shrink-0"
+              className="shrink-0"
               style={{ 
                 color: i === displayIndex && currentTrack 
                   ? (skin === 'silver' ? '#ddd' : currentSkin.textSecondary)
@@ -4152,7 +4281,7 @@ const MiniPlayer = ({
       title="Click to restore player"
     >
       {/* Album art */}
-      <div className="w-10 h-10 rounded overflow-hidden flex-shrink-0" style={{ border: `1px solid ${skin.textSecondary}40` }}>
+      <div className="w-10 h-10 rounded overflow-hidden shrink-0" style={{ border: `1px solid ${skin.textSecondary}40` }}>
         <img 
           src={albumArt} 
           alt=""
@@ -4224,7 +4353,7 @@ export default function Windows95Portfolio() {
     'vmware-case': { isOpen: false, isMinimized: false, isMaximized: false, position: { x: 50, y: 40 }, size: { width: 480, height: 450 }, zIndex: 0 },
     'global-search-gallery': { isOpen: false, isMinimized: false, isMaximized: false, position: { x: 540, y: 40 }, size: { width: 420, height: 450 }, zIndex: 0 },
     'island-health-case': { isOpen: false, isMinimized: false, isMaximized: false, position: { x: 120, y: 50 }, size: { width: 480, height: 450 }, zIndex: 0 },
-    minesweeper: { isOpen: false, isMinimized: false, isMaximized: false, position: { x: 200, y: 60 }, size: { width: 200, height: 280 }, zIndex: 0 },
+    minesweeper: { isOpen: false, isMinimized: false, isMaximized: false, position: { x: 200, y: 60 }, size: { width: 164, height: 265 }, zIndex: 0 },
     paint: { isOpen: false, isMinimized: false, isMaximized: false, position: { x: 120, y: 50 }, size: { width: 500, height: 400 }, zIndex: 0 },
     media: { isOpen: false, isMinimized: false, isMaximized: false, position: { x: 250, y: 80 }, size: { width: 320, height: 420 }, zIndex: 0 },
   });
@@ -4233,6 +4362,55 @@ export default function Windows95Portfolio() {
   const [isStartOpen, setIsStartOpen] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [currentOS, setCurrentOS] = useState<'win95' | 'winxp'>('win95');
+
+  // Desktop grid system
+  const { gridSize, taskbarHeight, cellToPixels, pixelsToCell } = useDesktopGrid(isMobile);
+  
+  // Icon positions state with localStorage persistence
+  const [iconPositions, setIconPositions] = useState<Record<string, { col: number; row: number }>>(() => {
+    if (typeof window === 'undefined') return {};
+    const saved = localStorage.getItem('desktopIconPositions');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // Save icon positions to localStorage
+  useEffect(() => {
+    if (Object.keys(iconPositions).length > 0) {
+      localStorage.setItem('desktopIconPositions', JSON.stringify(iconPositions));
+    }
+  }, [iconPositions]);
+
+  // Collision detection: check if a cell is occupied
+  const isCellOccupied = useCallback((col: number, row: number, excludeId?: string) => {
+    return Object.entries(iconPositions).some(
+      ([id, pos]) => id !== excludeId && pos.col === col && pos.row === row
+    );
+  }, [iconPositions]);
+
+  // Find nearest empty cell (spiral search)
+  const findNearestEmptyCell = useCallback((startCol: number, startRow: number, excludeId: string) => {
+    // First check the target cell
+    if (!isCellOccupied(startCol, startRow, excludeId)) {
+      return { col: startCol, row: startRow };
+    }
+
+    // Spiral outward to find empty cell
+    for (let distance = 1; distance < Math.max(gridSize.cols, gridSize.rows); distance++) {
+      for (let dc = -distance; dc <= distance; dc++) {
+        for (let dr = -distance; dr <= distance; dr++) {
+          if (Math.abs(dc) !== distance && Math.abs(dr) !== distance) continue; // Only check perimeter
+          const col = startCol + dc;
+          const row = startRow + dr;
+          if (col >= 0 && col < gridSize.cols && row >= 0 && row < gridSize.rows) {
+            if (!isCellOccupied(col, row, excludeId)) {
+              return { col, row };
+            }
+          }
+        }
+      }
+    }
+    return { col: startCol, row: startRow }; // Fallback
+  }, [gridSize, isCellOccupied]);
 
   // On mobile, only show one window at boot (About Me)
   useEffect(() => {
@@ -4288,6 +4466,7 @@ export default function Windows95Portfolio() {
 
   const desktopIcons = [
     { id: 'about', label: 'About Me', icon: getIcon('user', currentDesktopIconSize) },
+    { id: 'recycle', label: 'Recycle Bin', icon: getIcon('recycle', currentDesktopIconSize) },
     { id: 'projects', label: 'My Projects', icon: getIcon('folder', currentDesktopIconSize) },
     { id: 'resume', label: 'Resume', icon: getIcon('notepad', currentDesktopIconSize) },
     { id: 'contact', label: 'Contact', icon: getIcon('mail', currentDesktopIconSize) },
@@ -4296,8 +4475,49 @@ export default function Windows95Portfolio() {
     { id: 'minesweeper', label: 'Minesweeper', icon: getIcon('minesweeper', currentDesktopIconSize) },
     { id: 'paint', label: 'Paint', icon: getIcon('paint', currentDesktopIconSize) },
     { id: 'media', label: currentOS === 'winxp' ? 'Windows Media Player' : 'Media Player', icon: getIcon('media', currentDesktopIconSize) },
-    { id: 'recycle', label: 'Recycle Bin', icon: getIcon('recycle', currentDesktopIconSize) },
   ];
+
+  // Initialize default icon positions (column-first order like Windows)
+  useEffect(() => {
+    if (gridSize.rows === 0) return; // Wait for grid to be calculated
+    
+    const hasPositions = desktopIcons.every(icon => iconPositions[icon.id]);
+    if (!hasPositions) {
+      const defaultPositions: Record<string, { col: number; row: number }> = {};
+      desktopIcons.forEach((icon, index) => {
+        // Fill columns first (top to bottom), then move right
+        const col = Math.floor(index / gridSize.rows);
+        const row = index % gridSize.rows;
+        defaultPositions[icon.id] = { col, row };
+      });
+      setIconPositions(defaultPositions);
+    }
+  }, [gridSize.rows, desktopIcons.length]);
+
+  // Handle window resize - keep icons within valid grid bounds
+  useEffect(() => {
+    if (gridSize.cols === 0 || gridSize.rows === 0) return;
+    if (Object.keys(iconPositions).length === 0) return;
+
+    let needsUpdate = false;
+    const validatedPositions = { ...iconPositions };
+
+    Object.entries(validatedPositions).forEach(([id, pos]) => {
+      if (pos.col >= gridSize.cols || pos.row >= gridSize.rows) {
+        needsUpdate = true;
+        const newPos = findNearestEmptyCell(
+          Math.min(pos.col, gridSize.cols - 1),
+          Math.min(pos.row, gridSize.rows - 1),
+          id
+        );
+        validatedPositions[id] = newPos;
+      }
+    });
+
+    if (needsUpdate) {
+      setIconPositions(validatedPositions);
+    }
+  }, [gridSize.cols, gridSize.rows]);
 
   const bringToFront = (id) => {
     const newZ = topZIndex + 1;
@@ -4327,6 +4547,14 @@ export default function Windows95Portfolio() {
     }
   };
 
+  // Resize handler for Minesweeper
+  const handleMinesweeperResize = useCallback((width: number, height: number) => {
+    setWindows(prev => ({
+      ...prev,
+      minesweeper: { ...prev.minesweeper, size: { width, height } }
+    }));
+  }, []);
+
   // Apps array defined after openApp so it can be passed as prop
   const apps = [
     { id: 'about', title: 'About Me', menuIcon: getIcon('user', iconSize), content: <AboutContent currentOS={currentOS} /> },
@@ -4338,7 +4566,7 @@ export default function Windows95Portfolio() {
     { id: 'vmware-case', title: 'GlobalSearch.txt - Notepad', menuIcon: getIcon('notepad', iconSize), content: <VMwareCaseStudy currentOS={currentOS} /> },
     { id: 'global-search-gallery', title: 'Global Search - Screenshots', menuIcon: getIcon('folder', iconSize), content: <GlobalSearchGallery currentOS={currentOS} />, hideMenuBar: true },
     { id: 'island-health-case', title: 'IslandHealth.txt - Notepad', menuIcon: getIcon('notepad', iconSize), content: <IslandHealthCaseStudy currentOS={currentOS} /> },
-    { id: 'minesweeper', title: 'Minesweeper', menuIcon: getIcon('minesweeper', iconSize), content: <Minesweeper currentOS={currentOS} />, hideMenuBar: true },
+    { id: 'minesweeper', title: 'Minesweeper', menuIcon: getIcon('minesweeper', iconSize), content: <Minesweeper currentOS={currentOS} onResize={handleMinesweeperResize} />, hideMenuBar: true, noScroll: true, noStatusBar: true },
     { id: 'paint', title: 'untitled - Paint', menuIcon: getIcon('paint', iconSize), content: <PaintContent currentOS={currentOS} />, hideMenuBar: true },
     { id: 'media', title: currentOS === 'winxp' ? 'Windows Media Player' : 'Windows Media Player - 1995 Hits', menuIcon: getIcon('media', iconSize), content: <MediaPlayerContent currentOS={currentOS} />, hideMenuBar: true },
   ];
@@ -4393,30 +4621,51 @@ export default function Windows95Portfolio() {
   const StartMenuComponent = currentOS === 'winxp' ? StartMenuXP : StartMenu95;
   const TaskbarComponent = currentOS === 'winxp' ? TaskbarXP : Taskbar95;
   const DesktopIconComponent = currentOS === 'winxp' ? DesktopIconXP : DesktopIcon95;
-  const desktopBgColor = currentOS === 'winxp' ? '#3A6EA5' : '#008080';
+  const desktopBgStyle = currentOS === 'winxp' 
+    ? { 
+        backgroundImage: 'url(/ebmujj5y92q01.jpg)', 
+        backgroundSize: 'cover', 
+        backgroundPosition: 'center',
+        backgroundColor: '#3A6EA5' 
+      } 
+    : { backgroundColor: '#008080' };
 
   return (
     <div 
       className="w-full h-screen relative overflow-hidden select-none"
-      style={{ backgroundColor: desktopBgColor }}
+      style={desktopBgStyle}
       onClick={() => { setSelectedIcon(null); setIsStartOpen(false); }}
     >
-      {/* Desktop icons - hidden on mobile when a window is open */}
+      {/* Desktop icons grid - hidden on mobile when a window is open */}
       {(!isMobile || !Object.values(windows).some(w => w.isOpen && !w.isMinimized)) && (
         <div 
-          className={`absolute top-2 left-2 flex ${isMobile ? 'flex-row flex-wrap gap-2' : 'flex-col gap-1'}`} 
+          className="absolute inset-0" 
+          style={{ bottom: taskbarHeight }}
           onClick={(e) => e.stopPropagation()}
         >
           {desktopIcons.map((item) => (
-            <DesktopIconComponent
+            <DraggableDesktopIcon
               key={item.id}
-              icon={item.icon}
-              label={item.label}
-              isSelected={selectedIcon === item.id}
-              onSelect={() => setSelectedIcon(item.id)}
-              onClick={() => openApp(item.id)}
+              iconId={item.id}
+              position={iconPositions[item.id] || { col: 0, row: 0 }}
+              gridSize={gridSize}
               isMobile={isMobile}
-            />
+              cellToPixels={cellToPixels}
+              pixelsToCell={pixelsToCell}
+              isCellOccupied={isCellOccupied}
+              onDragEnd={(newPos) => {
+                setIconPositions(prev => ({ ...prev, [item.id]: newPos }));
+              }}
+            >
+              <DesktopIconComponent
+                icon={item.icon}
+                label={item.label}
+                isSelected={selectedIcon === item.id}
+                onSelect={() => setSelectedIcon(item.id)}
+                onClick={() => openApp(item.id)}
+                isMobile={isMobile}
+              />
+            </DraggableDesktopIcon>
           ))}
         </div>
       )}
@@ -4441,6 +4690,8 @@ export default function Windows95Portfolio() {
             onDrag={handleDrag}
             onResize={handleResize}
             hideMenuBar={app.hideMenuBar}
+            noScroll={app.noScroll}
+            noStatusBar={app.noStatusBar}
             allWindows={windows}
             isMobile={isMobile}
             isTouch={isTouch}
