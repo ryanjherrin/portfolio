@@ -277,6 +277,21 @@ const PixelIcon = ({ type, size = 32 }) => {
     help: <img src="/icons/w95-help.ico" width={size} height={size} alt="Help" style={iconStyle} />,
     paint: <img src="/icons/w95-paint.ico" width={size} height={size} alt="Paint" style={iconStyle} />,
     media: <img src="/icons/w95-media.ico" width={size} height={size} alt="Media Player" style={iconStyle} />,
+    piano: (
+      <svg viewBox="0 0 32 32" width={size} height={size} style={iconStyle}>
+        <rect x="2" y="6" width="28" height="20" fill="#c0c0c0" stroke="#000" strokeWidth="1"/>
+        <rect x="4" y="8" width="4" height="16" fill="#fff" stroke="#000" strokeWidth="0.5"/>
+        <rect x="8" y="8" width="4" height="16" fill="#fff" stroke="#000" strokeWidth="0.5"/>
+        <rect x="12" y="8" width="4" height="16" fill="#fff" stroke="#000" strokeWidth="0.5"/>
+        <rect x="16" y="8" width="4" height="16" fill="#fff" stroke="#000" strokeWidth="0.5"/>
+        <rect x="20" y="8" width="4" height="16" fill="#fff" stroke="#000" strokeWidth="0.5"/>
+        <rect x="24" y="8" width="4" height="16" fill="#fff" stroke="#000" strokeWidth="0.5"/>
+        <rect x="6" y="8" width="3" height="10" fill="#000"/>
+        <rect x="11" y="8" width="3" height="10" fill="#000"/>
+        <rect x="18" y="8" width="3" height="10" fill="#000"/>
+        <rect x="22" y="8" width="3" height="10" fill="#000"/>
+      </svg>
+    ),
   };
   return icons[type] || icons.folder;
 };
@@ -295,6 +310,27 @@ const XPIcon = ({ type, size = 32 }) => {
     help: <img src="/icons/wxp-help.ico" width={size} height={size} alt="Help" />,
     paint: <img src="/icons/wxp-paint.ico" width={size} height={size} alt="Paint" />,
     media: <img src="/icons/wxp-media.ico" width={size} height={size} alt="Media Player" />,
+    piano: (
+      <svg viewBox="0 0 32 32" width={size} height={size}>
+        <defs>
+          <linearGradient id="pianoGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#fff"/>
+            <stop offset="100%" stopColor="#e0e0e0"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="6" width="28" height="20" fill="#8B4513" rx="2"/>
+        <rect x="4" y="8" width="4" height="16" fill="url(#pianoGrad)" stroke="#666" strokeWidth="0.3"/>
+        <rect x="8" y="8" width="4" height="16" fill="url(#pianoGrad)" stroke="#666" strokeWidth="0.3"/>
+        <rect x="12" y="8" width="4" height="16" fill="url(#pianoGrad)" stroke="#666" strokeWidth="0.3"/>
+        <rect x="16" y="8" width="4" height="16" fill="url(#pianoGrad)" stroke="#666" strokeWidth="0.3"/>
+        <rect x="20" y="8" width="4" height="16" fill="url(#pianoGrad)" stroke="#666" strokeWidth="0.3"/>
+        <rect x="24" y="8" width="4" height="16" fill="url(#pianoGrad)" stroke="#666" strokeWidth="0.3"/>
+        <rect x="6" y="8" width="3" height="10" fill="#1a1a1a" rx="0.5"/>
+        <rect x="11" y="8" width="3" height="10" fill="#1a1a1a" rx="0.5"/>
+        <rect x="18" y="8" width="3" height="10" fill="#1a1a1a" rx="0.5"/>
+        <rect x="22" y="8" width="3" height="10" fill="#1a1a1a" rx="0.5"/>
+      </svg>
+    ),
   };
   return icons[type] || icons.folder;
 };
@@ -3227,6 +3263,272 @@ const PaintContent = ({ currentOS = 'win95' }) => {
   );
 };
 
+// Piano App
+const PianoContent = ({ currentOS = 'win95' }: { currentOS?: string }) => {
+  const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const activeOscillators = useRef<Map<string, { oscillator: OscillatorNode; gainNode: GainNode }>>(new Map());
+
+  // OS-specific styling
+  const isXP = currentOS === 'winxp';
+  const bgColor = isXP ? '#ECE9D8' : '#c0c0c0';
+  const borderStyle = isXP ? insetXP : inset;
+
+  // Note frequencies (Hz) - Two octaves starting from C4
+  const noteFrequencies: Record<string, number> = {
+    'C4': 261.63, 'C#4': 277.18, 'D4': 293.66, 'D#4': 311.13, 'E4': 329.63,
+    'F4': 349.23, 'F#4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'A4': 440.00,
+    'A#4': 466.16, 'B4': 493.88,
+    'C5': 523.25, 'C#5': 554.37, 'D5': 587.33, 'D#5': 622.25, 'E5': 659.25,
+    'F5': 698.46, 'F#5': 739.99, 'G5': 783.99, 'G#5': 830.61, 'A5': 880.00,
+    'A#5': 932.33, 'B5': 987.77, 'C6': 1046.50,
+  };
+
+  // Keyboard mapping (standard piano layout)
+  const keyboardMap: Record<string, string> = {
+    // Lower octave
+    'a': 'C4', 'w': 'C#4', 's': 'D4', 'e': 'D#4', 'd': 'E4',
+    'f': 'F4', 't': 'F#4', 'g': 'G4', 'y': 'G#4', 'h': 'A4',
+    'u': 'A#4', 'j': 'B4',
+    // Upper octave
+    'k': 'C5', 'o': 'C#5', 'l': 'D5', 'p': 'D#5', ';': 'E5',
+    "'": 'F5',
+  };
+
+  // Piano keys definition
+  const whiteKeys = [
+    { note: 'C4', label: 'C', key: 'A' },
+    { note: 'D4', label: 'D', key: 'S' },
+    { note: 'E4', label: 'E', key: 'D' },
+    { note: 'F4', label: 'F', key: 'F' },
+    { note: 'G4', label: 'G', key: 'G' },
+    { note: 'A4', label: 'A', key: 'H' },
+    { note: 'B4', label: 'B', key: 'J' },
+    { note: 'C5', label: 'C', key: 'K' },
+    { note: 'D5', label: 'D', key: 'L' },
+    { note: 'E5', label: 'E', key: ';' },
+    { note: 'F5', label: 'F', key: "'" },
+  ];
+
+  const blackKeys = [
+    { note: 'C#4', label: 'C#', key: 'W', position: 0 },
+    { note: 'D#4', label: 'D#', key: 'E', position: 1 },
+    { note: 'F#4', label: 'F#', key: 'T', position: 3 },
+    { note: 'G#4', label: 'G#', key: 'Y', position: 4 },
+    { note: 'A#4', label: 'A#', key: 'U', position: 5 },
+    { note: 'C#5', label: 'C#', key: 'O', position: 7 },
+    { note: 'D#5', label: 'D#', key: 'P', position: 8 },
+  ];
+
+  // Initialize audio context lazily
+  const getAudioContext = () => {
+    if (!audioContextRef.current) {
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (AudioContextClass) {
+        audioContextRef.current = new AudioContextClass();
+      }
+    }
+    return audioContextRef.current;
+  };
+
+  // Play a note
+  const playNote = useCallback((note: string) => {
+    const audioContext = getAudioContext();
+    if (!audioContext || activeOscillators.current.has(note)) return;
+
+    const frequency = noteFrequencies[note];
+    if (!frequency) return;
+
+    // Resume audio context if suspended (browser autoplay policy)
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    // Use triangle wave for piano-like sound
+    oscillator.type = 'triangle';
+    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+    // ADSR envelope for more realistic sound
+    const now = audioContext.currentTime;
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(0.5, now + 0.01); // Attack
+    gainNode.gain.linearRampToValueAtTime(0.3, now + 0.1);  // Decay to sustain
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    oscillator.start();
+
+    activeOscillators.current.set(note, { oscillator, gainNode });
+    setPressedKeys(prev => new Set(prev).add(note));
+  }, []);
+
+  // Stop a note
+  const stopNote = useCallback((note: string) => {
+    const activeNote = activeOscillators.current.get(note);
+    if (!activeNote) return;
+
+    const { oscillator, gainNode } = activeNote;
+    const audioContext = getAudioContext();
+    if (!audioContext) return;
+
+    // Release envelope
+    const now = audioContext.currentTime;
+    gainNode.gain.cancelScheduledValues(now);
+    gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+    gainNode.gain.linearRampToValueAtTime(0, now + 0.2);
+
+    // Stop oscillator after release
+    setTimeout(() => {
+      oscillator.stop();
+      oscillator.disconnect();
+      gainNode.disconnect();
+    }, 200);
+
+    activeOscillators.current.delete(note);
+    setPressedKeys(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(note);
+      return newSet;
+    });
+  }, []);
+
+  // Keyboard event handlers
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.repeat) return; // Prevent key repeat
+      const note = keyboardMap[e.key.toLowerCase()];
+      if (note) {
+        e.preventDefault();
+        playNote(note);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      const note = keyboardMap[e.key.toLowerCase()];
+      if (note) {
+        e.preventDefault();
+        stopNote(note);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      // Cleanup any active oscillators
+      activeOscillators.current.forEach(({ oscillator, gainNode }) => {
+        oscillator.stop();
+        oscillator.disconnect();
+        gainNode.disconnect();
+      });
+      activeOscillators.current.clear();
+    };
+  }, [playNote, stopNote]);
+
+  const whiteKeyWidth = 45;
+  const whiteKeyHeight = 140;
+  const blackKeyWidth = 28;
+  const blackKeyHeight = 85;
+
+  return (
+    <div 
+      className="flex flex-col h-full select-none" 
+      style={{ backgroundColor: bgColor }}
+    >
+      {/* Header */}
+      <div 
+        className="px-3 py-2 text-center border-b"
+        style={{ 
+          borderColor: isXP ? '#ACA899' : '#808080',
+          backgroundColor: isXP ? '#ECE9D8' : '#c0c0c0'
+        }}
+      >
+        <div className="text-xs" style={{ fontFamily: '"MS Sans Serif", Tahoma, sans-serif' }}>
+          Use keyboard (A-L, W-P) or click keys to play
+        </div>
+      </div>
+
+      {/* Piano keyboard */}
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div 
+          className="relative"
+          style={{ 
+            ...borderStyle,
+            padding: '8px',
+            backgroundColor: isXP ? '#3C3C3C' : '#404040',
+          }}
+        >
+          {/* White keys */}
+          <div className="flex">
+            {whiteKeys.map((key, index) => (
+              <button
+                key={key.note}
+                className="relative flex flex-col items-center justify-end pb-2 transition-colors"
+                style={{
+                  width: whiteKeyWidth,
+                  height: whiteKeyHeight,
+                  backgroundColor: pressedKeys.has(key.note) 
+                    ? (isXP ? '#d0d0d0' : '#a0a0a0')
+                    : '#ffffff',
+                  border: '1px solid #000',
+                  borderRadius: '0 0 4px 4px',
+                  marginRight: index < whiteKeys.length - 1 ? '2px' : '0',
+                  boxShadow: pressedKeys.has(key.note)
+                    ? 'inset 2px 2px 4px rgba(0,0,0,0.3)'
+                    : '2px 2px 4px rgba(0,0,0,0.3)',
+                }}
+                onMouseDown={() => playNote(key.note)}
+                onMouseUp={() => stopNote(key.note)}
+                onMouseLeave={() => stopNote(key.note)}
+                onTouchStart={(e) => { e.preventDefault(); playNote(key.note); }}
+                onTouchEnd={(e) => { e.preventDefault(); stopNote(key.note); }}
+              >
+                <span className="text-[10px] text-gray-600 font-bold">{key.key}</span>
+                <span className="text-[9px] text-gray-400">{key.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Black keys */}
+          {blackKeys.map((key) => (
+            <button
+              key={key.note}
+              className="absolute flex flex-col items-center justify-end pb-1 transition-colors"
+              style={{
+                width: blackKeyWidth,
+                height: blackKeyHeight,
+                backgroundColor: pressedKeys.has(key.note) 
+                  ? '#404040'
+                  : '#1a1a1a',
+                border: '1px solid #000',
+                borderRadius: '0 0 3px 3px',
+                left: 8 + (key.position * (whiteKeyWidth + 2)) + whiteKeyWidth - (blackKeyWidth / 2),
+                top: 8,
+                boxShadow: pressedKeys.has(key.note)
+                  ? 'inset 1px 1px 3px rgba(0,0,0,0.5)'
+                  : '2px 2px 3px rgba(0,0,0,0.4)',
+                zIndex: 1,
+              }}
+              onMouseDown={() => playNote(key.note)}
+              onMouseUp={() => stopNote(key.note)}
+              onMouseLeave={() => stopNote(key.note)}
+              onTouchStart={(e) => { e.preventDefault(); playNote(key.note); }}
+              onTouchEnd={(e) => { e.preventDefault(); stopNote(key.note); }}
+            >
+              <span className="text-[8px] text-gray-400 font-bold">{key.key}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Media Player - 1995 Greatest Hits (YouTube-powered)
 // 1995 Greatest Hits playlist with YouTube video IDs
 const PLAYLIST_1995: Track[] = [
@@ -4356,6 +4658,7 @@ export default function Windows95Portfolio() {
     minesweeper: { isOpen: false, isMinimized: false, isMaximized: false, position: { x: 200, y: 60 }, size: { width: 164, height: 265 }, zIndex: 0 },
     paint: { isOpen: false, isMinimized: false, isMaximized: false, position: { x: 120, y: 50 }, size: { width: 500, height: 400 }, zIndex: 0 },
     media: { isOpen: false, isMinimized: false, isMaximized: false, position: { x: 250, y: 80 }, size: { width: 320, height: 420 }, zIndex: 0 },
+    piano: { isOpen: false, isMinimized: false, isMaximized: false, position: { x: 150, y: 80 }, size: { width: 560, height: 240 }, zIndex: 0 },
   });
   
   const [topZIndex, setTopZIndex] = useState(2);
@@ -4475,6 +4778,7 @@ export default function Windows95Portfolio() {
     { id: 'minesweeper', label: 'Minesweeper', icon: getIcon('minesweeper', currentDesktopIconSize) },
     { id: 'paint', label: 'Paint', icon: getIcon('paint', currentDesktopIconSize) },
     { id: 'media', label: currentOS === 'winxp' ? 'Windows Media Player' : 'Media Player', icon: getIcon('media', currentDesktopIconSize) },
+    { id: 'piano', label: 'Piano', icon: getIcon('piano', currentDesktopIconSize) },
   ];
 
   // Initialize default icon positions (column-first order like Windows)
@@ -4569,6 +4873,7 @@ export default function Windows95Portfolio() {
     { id: 'minesweeper', title: 'Minesweeper', menuIcon: getIcon('minesweeper', iconSize), content: <Minesweeper currentOS={currentOS} onResize={handleMinesweeperResize} />, hideMenuBar: true, noScroll: true, noStatusBar: true },
     { id: 'paint', title: 'untitled - Paint', menuIcon: getIcon('paint', iconSize), content: <PaintContent currentOS={currentOS} />, hideMenuBar: true },
     { id: 'media', title: currentOS === 'winxp' ? 'Windows Media Player' : 'Windows Media Player - 1995 Hits', menuIcon: getIcon('media', iconSize), content: <MediaPlayerContent currentOS={currentOS} />, hideMenuBar: true },
+    { id: 'piano', title: 'Piano', menuIcon: getIcon('piano', iconSize), content: <PianoContent currentOS={currentOS} />, hideMenuBar: true, noScroll: true, noStatusBar: true },
   ];
 
   const closeWindow = (id) => {
