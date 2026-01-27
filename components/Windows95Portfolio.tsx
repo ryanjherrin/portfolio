@@ -4806,10 +4806,39 @@ export default function Windows95Portfolio() {
     let needsUpdate = false;
     const validatedPositions = { ...iconPositions };
 
+    // Local collision check that uses validatedPositions (not stale state)
+    const isPositionOccupied = (col: number, row: number, excludeId: string) => {
+      return Object.entries(validatedPositions).some(
+        ([id, pos]) => id !== excludeId && pos.col === col && pos.row === row
+      );
+    };
+
+    // Local findNearestEmpty that uses validatedPositions
+    const findNearestEmpty = (startCol: number, startRow: number, excludeId: string) => {
+      if (!isPositionOccupied(startCol, startRow, excludeId)) {
+        return { col: startCol, row: startRow };
+      }
+      for (let distance = 1; distance < Math.max(gridSize.cols, gridSize.rows); distance++) {
+        for (let dc = -distance; dc <= distance; dc++) {
+          for (let dr = -distance; dr <= distance; dr++) {
+            if (Math.abs(dc) !== distance && Math.abs(dr) !== distance) continue;
+            const col = startCol + dc;
+            const row = startRow + dr;
+            if (col >= 0 && col < gridSize.cols && row >= 0 && row < gridSize.rows) {
+              if (!isPositionOccupied(col, row, excludeId)) {
+                return { col, row };
+              }
+            }
+          }
+        }
+      }
+      return { col: startCol, row: startRow };
+    };
+
     Object.entries(validatedPositions).forEach(([id, pos]) => {
       if (pos.col >= gridSize.cols || pos.row >= gridSize.rows) {
         needsUpdate = true;
-        const newPos = findNearestEmptyCell(
+        const newPos = findNearestEmpty(
           Math.min(pos.col, gridSize.cols - 1),
           Math.min(pos.row, gridSize.rows - 1),
           id
